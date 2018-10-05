@@ -1,0 +1,8 @@
+/target
+
+### IntelliJ IDEA ###
+/.*
+!.gitignore
+*.iws
+*.iml
+*.ipr
