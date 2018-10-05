@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.optatask</groupId>
   <artifactId>optatask</artifactId>
-  <packaging>jar</packaging>
+  <packaging>kjar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>optatask</name>
-  <url>http://maven.apache.org</url>
+
   <dependencies>
     <dependency>
       <groupId>org.optaplanner</groupId>
@@ -14,4 +14,25 @@
       <version>7.12.0.Final</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-maven-plugin</artifactId>
+        <version>7.12.0.Final</version>
+        <extensions>true</extensions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
