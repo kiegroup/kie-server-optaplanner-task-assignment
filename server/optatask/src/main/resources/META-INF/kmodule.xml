@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule"/>
+<kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.drools.org/xsd/kmodule">
+  <kbase name="optataskKBase" packages="org.optatask.solver">
+    <ksession name="optataskKsession"/>
+  </kbase>
+</kmodule>
