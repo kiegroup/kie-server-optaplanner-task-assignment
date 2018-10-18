@@ -19,6 +19,9 @@ package org.optatask.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TaTaskType")
 public class TaskType extends AbstractPersistable {
 
     private String code;

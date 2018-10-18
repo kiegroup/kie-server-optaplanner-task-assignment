@@ -76,4 +76,5 @@ public class StartTimeUpdatingVariableListener implements VariableListener<Task>
         }
         return Math.max(task.getReadyTime(), previousEndTime);
     }
+
 }

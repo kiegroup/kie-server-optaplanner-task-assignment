@@ -8,10 +8,8 @@
   <name>optatask</name>
 
   <properties>
-    <drools.version>7.7.0.Final</drools.version>
     <optaplanner.version>7.12.0.Final</optaplanner.version>
     <kie.version>7.12.0.Final</kie.version>
-    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <dependencies>
@@ -19,60 +17,21 @@
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-core</artifactId>
       <version>${optaplanner.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-core</artifactId>
-      <version>${drools.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>
       <version>${kie.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server-client</artifactId>
       <version>7.7.0.Final</version>
+      <scope>provided</scope>
     </dependency>
-    <!-- Logging -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <!-- Drools Commands -->
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-compiler</artifactId>
-      <scope>runtime</scope>
-      <version>7.7.0.Final</version>
-    </dependency>
-    <!-- REST Client -->
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-client</artifactId>
-      <version>3.5.0.Final</version>
-    </dependency>
-
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-bom</artifactId>
-        <type>pom</type>
-        <version>${drools.version}</version>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <plugins>

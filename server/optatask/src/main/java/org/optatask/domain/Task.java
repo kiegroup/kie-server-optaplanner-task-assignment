@@ -16,6 +16,7 @@
 
 package org.optatask.domain;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.variable.AnchorShadowVariable;
@@ -27,6 +28,7 @@ import org.optatask.domain.solver.StartTimeUpdatingVariableListener;
 import org.optatask.domain.solver.TaskDifficultyComparator;
 
 @PlanningEntity(difficultyComparatorClass = TaskDifficultyComparator.class)
+@XStreamAlias("TaTask")
 public class Task extends TaskOrEmployee {
 
     private TaskType taskType;

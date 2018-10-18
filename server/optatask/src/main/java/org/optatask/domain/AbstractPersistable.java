@@ -42,12 +42,38 @@ public abstract class AbstractPersistable implements Serializable, Comparable<Ab
         this.id = id;
     }
 
+// This part is currently commented out because it's probably a bad thing to mix identification with equality
+
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (id == null || !(o instanceof AbstractPersistable)) {
+//            return false;
+//        } else {
+//            AbstractPersistable other = (AbstractPersistable) o;
+//            return getClass().equals(other.getClass()) && id.equals(other.id);
+//        }
+//    }
+//
+//    public int hashCode() {
+//        if (id == null) {
+//            return super.hashCode();
+//        } else {
+//            // A direct implementation (instead of HashCodeBuilder) to avoid dependencies
+//            return (((17 * 37)
+//                    + getClass().hashCode())) * 37
+//                    + id.hashCode();
+//        }
+//    }
+
     /**
      * Used by the GUI to sort the {@link ConstraintMatch} list
      * by {@link ConstraintMatch#getJustificationList()}.
      * @param other never null
      * @return comparison
      */
+    @Override
     public int compareTo(AbstractPersistable other) {
         return new CompareToBuilder()
                 .append(getClass().getName(), other.getClass().getName())

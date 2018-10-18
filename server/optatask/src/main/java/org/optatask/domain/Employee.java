@@ -21,6 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TaEmployee")
 public class Employee extends TaskOrEmployee {
 
     private String fullName;

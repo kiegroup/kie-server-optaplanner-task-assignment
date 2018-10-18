@@ -22,8 +22,7 @@ import java.util.Comparator;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.optatask.domain.Task;
 
-public class TaskDifficultyComparator implements Comparator<Task>,
-                                                 Serializable {
+public class TaskDifficultyComparator implements Comparator<Task>, Serializable {
 
     @Override
     public int compare(Task a, Task b) {
@@ -34,4 +33,5 @@ public class TaskDifficultyComparator implements Comparator<Task>,
                 .append(a.getId(), b.getId())
                 .toComparison();
     }
+
 }

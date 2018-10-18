@@ -16,6 +16,9 @@
 
 package org.optatask.domain;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TaCustomer")
 public class Customer extends AbstractPersistable {
 
     private String name;

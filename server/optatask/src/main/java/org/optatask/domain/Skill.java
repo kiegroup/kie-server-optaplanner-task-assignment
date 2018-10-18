@@ -16,6 +16,9 @@
 
 package org.optatask.domain;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TaSkill")
 public class Skill extends AbstractPersistable {
 
     private String name;
