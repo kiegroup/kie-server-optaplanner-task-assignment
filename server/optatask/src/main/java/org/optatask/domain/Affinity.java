@@ -16,6 +16,9 @@
 
 package org.optatask.domain;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TaAffinity")
 public enum Affinity {
     NONE(4),
     LOW(3),
