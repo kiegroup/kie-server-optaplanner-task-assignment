@@ -20,15 +20,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("TaAffinity")
 public enum Affinity {
-    NONE(4),
-    LOW(3),
-    MEDIUM(2),
-    HIGH(1);
+    NONE(4, "No affinity"),
+    LOW(3, "Low affinity"),
+    MEDIUM(2, "Medium affinity"),
+    HIGH(1, "High affinity");
 
     private final int durationMultiplier;
+    private final String label;
 
-    Affinity(int durationMultiplier) {
+    Affinity(int durationMultiplier, String label) {
         this.durationMultiplier = durationMultiplier;
+        this.label = label;
     }
 
     public int getDurationMultiplier() {
@@ -36,18 +38,7 @@ public enum Affinity {
     }
 
     public String getLabel() {
-        switch (this) {
-            case NONE:
-                return "No affinity";
-            case LOW:
-                return "Low affinity";
-            case MEDIUM:
-                return "Medium affinity";
-            case HIGH:
-                return "High affinity";
-            default:
-                throw new IllegalStateException("The affinity (" + this + ") is not implemented.");
-        }
+        return label;
     }
 
 }
