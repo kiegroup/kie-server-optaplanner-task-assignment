@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { Nav, NavList, NavItem, NavVariants } from '@patternfly/react-core';
 
-class Home extends Component {
-    state = {
-        activeItem: 0
-    };
+class Header extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            activeItem: 0
+        }
+
+        this.onSelect = this.onSelect.bind(this);
+    }
 
     onSelect = result => {
         this.setState({
@@ -13,22 +18,20 @@ class Home extends Component {
     };
 
     render() {
-        const { activeItem } = this.state;
-
         return (
             <div style={{ backgroundColor: '#292e34', padding: '1rem' }}>
-                <Nav onSelect={this.onSelect} aria-label="Primary Nav Horizontal Example">
+                <Nav onSelect={this.onSelect} aria-label="Primary Nav Horizontal">
                     <NavList variant={NavVariants.horizontal}>
-                        <NavItem to="/home" itemId={0} isActive={activeItem === 0}>
+                        <NavItem to="/home" itemId={0} isActive={this.state.activeItem === 0}>
                             Home
                         </NavItem>
-                        <NavItem to="/tasks" itemId={1} isActive={activeItem === 1}>
+                        <NavItem to="/tasks" itemId={1} isActive={this.state.activeItem === 1}>
                             Tasks
                         </NavItem>
-                        <NavItem to="/employees" itemId={2} isActive={activeItem === 2}>
+                        <NavItem to="/employees" itemId={2} isActive={this.state.activeItem === 2}>
                             Employees
                         </NavItem>
-                        <NavItem to="/employees" itemId={3} isActive={activeItem === 3}>
+                        <NavItem to="/employees" itemId={3} isActive={this.state.activeItem === 3}>
                             Customers
                         </NavItem>
                     </NavList>
@@ -38,4 +41,4 @@ class Home extends Component {
     }
 }
 
-export default Home;
+export default Header;
