@@ -21,20 +21,22 @@ class Header extends Component {
         return (
             <div style={{ backgroundColor: '#292e34', padding: '1rem' }}>
                 <Nav onSelect={this.onSelect} aria-label="Primary Nav Horizontal">
-                    <NavList variant={NavVariants.horizontal}>
-                        <NavItem to="/home" itemId={0} isActive={this.state.activeItem === 0}>
-                            Home
+                    <div className="container">
+                        <NavList variant={NavVariants.horizontal}>
+                            <NavItem to="/home" itemId={0} isActive={this.state.activeItem === 0}>
+                                Home
                         </NavItem>
-                        <NavItem to="/tasks" itemId={1} isActive={this.state.activeItem === 1}>
-                            Tasks
+                            <NavItem to="/tasks" itemId={1} isActive={this.state.activeItem === 1}>
+                                Tasks
                         </NavItem>
-                        <NavItem to="/employees" itemId={2} isActive={this.state.activeItem === 2}>
-                            Employees
+                            <NavItem to="/employees" itemId={2} isActive={this.state.activeItem === 2}>
+                                Employees
                         </NavItem>
-                        <NavItem to="/employees" itemId={3} isActive={this.state.activeItem === 3}>
-                            Customers
+                            <NavItem to="/employees" itemId={3} isActive={this.state.activeItem === 3}>
+                                Customers
                         </NavItem>
-                    </NavList>
+                        </NavList>
+                    </div>
                 </Nav>
             </div>
         );
