@@ -25,16 +25,22 @@ class Header extends Component {
                         <NavList variant={NavVariants.horizontal}>
                             <NavItem to="/home" itemId={0} isActive={this.state.activeItem === 0}>
                                 Home
-                        </NavItem>
-                            <NavItem to="/tasks" itemId={1} isActive={this.state.activeItem === 1}>
-                                Tasks
-                        </NavItem>
-                            <NavItem to="/employees" itemId={2} isActive={this.state.activeItem === 2}>
-                                Employees
-                        </NavItem>
-                            <NavItem to="/employees" itemId={3} isActive={this.state.activeItem === 3}>
+                            </NavItem>
+                            <NavItem to="/skills" itemId={1} isActive={this.state.activeItem === 1}>
+                                Skills
+                            </NavItem>
+                            <NavItem to="/taskTypes" itemId={2} isActive={this.state.activeItem === 2}>
+                                Task types
+                            </NavItem>
+                            <NavItem to="/customers" itemId={3} isActive={this.state.activeItem === 3}>
                                 Customers
-                        </NavItem>
+                            </NavItem>
+                            <NavItem to="/employees" itemId={4} isActive={this.state.activeItem === 4}>
+                                Employees
+                            </NavItem>
+                            <NavItem to="/tasks" itemId={5} isActive={this.state.activeItem === 5}>
+                                Tasks
+                            </NavItem>
                         </NavList>
                     </div>
                 </Nav>
