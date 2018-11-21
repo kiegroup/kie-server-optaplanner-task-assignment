@@ -1,3 +1,6 @@
+## OptaTask UI:
+In order to test the functionality, first have a KIE server running on http://localhost:8080 as explained here: https://docs.optaplanner.org/7.12.0.Final/optaplanner-wb-es-docs/html_single/#_planner.quickstart
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
