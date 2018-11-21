@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     Card, CardHeader, CardBody, Button, Modal,
-    Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup
+    Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup, TextArea
 } from '@patternfly/react-core';
 
 import { JXON } from '../shared/jxon';
@@ -16,6 +16,7 @@ class Home extends Component {
             info: '',
             isAddContainerModalOpen: false,
             isAddSolverModalOpen: false,
+            isAddProblemModalOpen: false,
             container: {
                 containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
                 groupId: 'org.optatask',
@@ -25,13 +26,16 @@ class Home extends Component {
             solver: {
                 id: 'solver1',
                 configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml'
-            }
+            },
+            problem: ''
         };
 
         this.handleAddContainerModalToggle = this.handleAddContainerModalToggle.bind(this);
         this.handleAddSolverModalToggle = this.handleAddSolverModalToggle.bind(this);
+        this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
         this.handleAddContainerModalConfirmDeployment = this.handleAddContainerModalConfirmDeployment.bind(this);
         this.handleConfirmAddSolver = this.handleConfirmAddSolver.bind(this);
+        this.handleConfirmAddProblem = this.handleConfirmAddProblem.bind(this);
     }
 
     handleAddContainerModalToggle = () => {
@@ -43,6 +47,12 @@ class Home extends Component {
     handleAddSolverModalToggle = () => {
         this.setState(({ isAddSolverModalOpen }) => ({
             isAddSolverModalOpen: !isAddSolverModalOpen
+        }));
+    }
+
+    handleAddProblemModalToggle = () => {
+        this.setState(({ isAddProblemModalOpen }) => ({
+            isAddProblemModalOpen: !isAddProblemModalOpen
         }));
     }
 
@@ -102,13 +112,13 @@ class Home extends Component {
     handleConfirmAddSolver(event) {
         event.preventDefault();
         this.handleAddSolverModalToggle();
+
         const body = {
             "solver-instance": {
                 "solver-config-file": this.state.solver.configFilePath
             }
         };
         var bodyAsXML = JXON.unbuild(body);
-
         fetch(baseURI + '/containers/' + this.state.container.containerId + '/solvers/' + this.state.solver.id, {
             method: "PUT",
             credentials: 'include',
@@ -136,6 +146,34 @@ class Home extends Component {
                 return JXON.build(response)
             })
             .then(response => alert(JSON.stringify(response)))
+            .catch(error => console.log('Caught error: ' + error));
+
+    }
+
+    handleConfirmAddProblem(event) {
+        event.preventDefault();
+        this.handleAddProblemModalToggle();
+
+        fetch(baseURI + '/containers/' + this.state.container.containerId + '/solvers/' + this.state.solver.id + '/state/solving', {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                'X-KIE-ContentType': 'xstream',
+                'Content-Type': 'application/xml'
+            },
+            body: this.state.problem
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert('Problem submitted successfully, solver is solving now.');
+                } else {
+                    var error = new Error(response.status + ': ' + response.statusText);
+                    error.response = response;
+                    throw error;
+                }
+            },
+                error => { throw new Error(error.message) }
+            )
             .catch(error => console.log('Caught error: ' + error));
 
     }
@@ -332,7 +370,7 @@ class Home extends Component {
                         <br />
                         <div className="row">
                             <div className="col">
-                                <Button onClick={this.handleAddSolverModalToggle} variant="primary">Add a problem</Button>
+                                <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
                             </div>
                         </div>
                     </CardBody>
@@ -340,18 +378,34 @@ class Home extends Component {
                 <Modal
                     title="Add problem"
                     isOpen={this.state.isAddProblemModalOpen}
-                    onClose={this.handleAddProblemrModalToggle}
-                    actions={[
-                        <Button key="cancelAddingSolver" variant="secondary" onClick={this.handleAddProblemrModalToggle}>Cancel</Button>,
-                        <Button key="confirmAddingSolver" variant="primary" onClick={this.handleAddProblemrModalToggle}>Add problem</Button>
-                    ]}
+                    onClose={this.handleAddProblemModalToggle}
                 >
-                    <div>Modal Body</div>
+                    <Form>
+                        <FormGroup
+                            label="Problem"
+                            isRequired
+                            fieldId="problem"
+                        >
+                            <TextArea
+                                isRequired
+                                id="problem"
+                                size="200"
+                                value={this.state.problem}
+                                onChange={(problem) => { this.setState({ problem }) }}
+                            />
+                        </FormGroup>
+                        <ActionGroup>
+                            <Toolbar>
+                                <ToolbarGroup>
+                                    <Button key="confirmAddProblem" variant="primary" onClick={this.handleConfirmAddProblem}>Add</Button>
+                                </ToolbarGroup>
+                                <ToolbarGroup>
+                                    <Button key="cancelAddProblem" variant="secondary" onClick={this.handleAddProblemModalToggle}>Cancel</Button>
+                                </ToolbarGroup>
+                            </Toolbar>
+                        </ActionGroup>
+                    </Form>
                 </Modal>
-
-                <br />
-                {this.state.info}
-
             </div>
         );
     }
