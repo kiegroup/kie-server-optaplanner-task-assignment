@@ -1,5 +1,3 @@
-"use strict";
-
 /*\
 |*|
 |*|	JXON framework - Copyleft 2011 by Mozilla Developer Network
@@ -89,7 +87,7 @@ export const JXON = new (function () {
 
 		}
 
-		if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {
+		if ((nVerb === 3 || ((nVerb === 2 || nVerb === 1) && nLength > 0)) && sCollectedTxt) {
 			vResult[sValProp] = vBuiltVal;
 		} else if (!bHighVerb && nLength === 0 && sCollectedTxt) {
 			vResult = vBuiltVal;

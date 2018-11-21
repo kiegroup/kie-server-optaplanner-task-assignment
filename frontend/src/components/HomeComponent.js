@@ -100,7 +100,7 @@ class Home extends Component {
                 error => { throw new Error(error.message) }
             )
             .then(response => {
-                return (new DOMParser).parseFromString(response, "text/xml");
+                return (new DOMParser()).parseFromString(response, "text/xml");
             })
             .then(response => {
                 return JXON.build(response)
@@ -140,7 +140,7 @@ class Home extends Component {
                 error => { throw new Error(error.message) }
             )
             .then(response => {
-                return (new DOMParser).parseFromString(response, "text/xml");
+                return (new DOMParser()).parseFromString(response, "text/xml");
             })
             .then(response => {
                 return JXON.build(response)
