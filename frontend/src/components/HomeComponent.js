@@ -4,7 +4,7 @@ import {
     Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup, TextArea
 } from '@patternfly/react-core';
 
-import { JXON } from '../shared/jxon';
+import JXON from 'jxon';
 
 const baseURI = '/kie-server/services/rest/server';
 
@@ -147,7 +147,6 @@ class Home extends Component {
             })
             .then(response => alert(JSON.stringify(response)))
             .catch(error => console.log('Caught error: ' + error));
-
     }
 
     handleConfirmAddProblem(event) {
@@ -175,7 +174,6 @@ class Home extends Component {
                 error => { throw new Error(error.message) }
             )
             .catch(error => console.log('Caught error: ' + error));
-
     }
 
     componentDidMount() {
@@ -186,11 +184,8 @@ class Home extends Component {
             }
         })
             .then((response) => {
-                console.log(response);
                 if (response.ok) {
-                    var result = response.json();
-                    console.log(result);
-                    return result;
+                    return response.json();
                 } else {
                     var error = new Error(response.status + ': ' + response.statusText);
                     error.response = response;
@@ -199,9 +194,7 @@ class Home extends Component {
             },
                 error => { throw new Error(error.message) }
             )
-            .then(response => {
-                console.log(JSON.stringify(response));
-                this.setState({ info: JSON.stringify(response) })})
+            .then(response => this.setState({ info: JSON.stringify(response) }))
             .catch(error => console.log('Caught error: ' + error));
     }
 
