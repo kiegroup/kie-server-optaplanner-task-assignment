@@ -6,7 +6,7 @@ import {
 
 import { JXON } from '../shared/jxon';
 
-const baseURI = ' http://localhost:8080/kie-server/services/rest/server';
+const baseURI = '/kie-server/services/rest/server';
 
 class Home extends Component {
 
@@ -182,12 +182,15 @@ class Home extends Component {
         fetch(baseURI, {
             credentials: 'include',
             headers: {
-                'X-KIE-ContentType': 'JSON'
+                'X-KIE-ContentType': 'json'
             }
         })
             .then((response) => {
+                console.log(response);
                 if (response.ok) {
-                    return response.json();
+                    var result = response.json();
+                    console.log(result);
+                    return result;
                 } else {
                     var error = new Error(response.status + ': ' + response.statusText);
                     error.response = response;
@@ -196,7 +199,9 @@ class Home extends Component {
             },
                 error => { throw new Error(error.message) }
             )
-            .then(response => this.setState({ info: JSON.stringify(response) }))
+            .then(response => {
+                console.log(JSON.stringify(response));
+                this.setState({ info: JSON.stringify(response) })})
             .catch(error => console.log('Caught error: ' + error));
     }
 
