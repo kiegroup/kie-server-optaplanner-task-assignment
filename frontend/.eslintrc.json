@@ -1,0 +1,14 @@
+{
+    "extends": ["airbnb", "react-app"],
+    "env": {
+        "browser": true
+    },
+    "parser": "babel-eslint",
+    "rules": {
+        "react/jsx-filename-extension": "off",
+        "react/destructuring-assignment": "off",
+        "no-console": "off",
+        "no-alert": "off",
+        "no-param-reassign": "off"
+    }
+}
