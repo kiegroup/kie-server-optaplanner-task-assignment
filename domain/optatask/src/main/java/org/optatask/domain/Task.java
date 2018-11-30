@@ -53,6 +53,7 @@ public class Task extends TaskOrEmployee {
             // because this shadow must be triggered after nextTask and employee (but there is no need to be triggered by those)
             sources = {@PlanningVariableReference(variableName = "previousTaskOrEmployee")})
     private Integer startTime; // In minutes
+    private Integer endTime;
 
     public Task() {
     }
@@ -138,6 +139,7 @@ public class Task extends TaskOrEmployee {
 
     public void setStartTime(Integer startTime) {
         this.startTime = startTime;
+        this.endTime = startTime == null ? null : startTime + getDuration();
     }
 
     // ************************************************************************

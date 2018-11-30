@@ -3,10 +3,12 @@ import {
   Card, CardHeader, CardBody, Button, Modal,
   Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup, TextArea,
 } from '@patternfly/react-core';
-
 import JXON from 'jxon';
 
-import PROBLEM from '../shared/24tasksRelativePath';
+import Schedule from './ScheduleComponent';
+
+import PROBLEM from '../shared/24tasks';
+import BEST_SOLUTION from '../shared/24tasksBestSolution';
 
 const baseURI = '/kie-server/services/rest/server';
 
@@ -26,7 +28,8 @@ class Home extends Component {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      problem: JXON.xmlToString(JXON.jsToXml(PROBLEM)),
+      problem: PROBLEM,
+      bestSolution: BEST_SOLUTION,
     };
 
     this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
@@ -144,7 +147,7 @@ class Home extends Component {
         'X-KIE-ContentType': 'xstream',
         'Content-Type': 'application/xml',
       },
-      body: this.state.problem,
+      body: JXON.xmlToString(JXON.jsToXml(this.state.problem)),
     })
       .then((response) => {
         if (response.ok) {
@@ -341,7 +344,7 @@ class Home extends Component {
                     isRequired
                     id="problem"
                     size="200"
-                    value={this.state.problem}
+                    value={JXON.xmlToString(JXON.jsToXml(this.state.problem))}
                     onChange={(problem) => { this.setState({ problem }); }}
                   />
                 </FormGroup>
@@ -357,6 +360,12 @@ class Home extends Component {
                 </ActionGroup>
               </Form>
             </Modal>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col">
+            <Schedule bestSolution={this.state.bestSolution} />
           </div>
         </div>
       </div>
