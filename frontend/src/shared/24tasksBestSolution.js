@@ -1,5 +1,5 @@
 export default {
-  TaTaskAssigningSolution: {
+  'best-solution': {
     id: '0',
     skillList: {
       TaSkill: [

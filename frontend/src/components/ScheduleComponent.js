@@ -6,49 +6,60 @@ import Scheduler, {
 import 'react-big-scheduler/lib/css/style.css';
 import moment from 'moment';
 
+const extractScheduler = (bestSolution) => {
+  const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Week, true);
+  schedulerData.localeMoment.locale('en');
+
+  const resources = [];
+  const events = [];
+
+  bestSolution['best-solution'].employeeList.TaEmployee.forEach((employee) => {
+    const resource = {
+      id: employee.id,
+      name: employee.fullName,
+    };
+    resources.push(resource);
+
+    let currentTask = employee.nextTask;
+    while (currentTask != null) {
+      const start = new Date(2018, 0);
+      const end = new Date(2018, 0);
+      start.setMinutes(currentTask.startTime == null ? 0 : currentTask.startTime);
+      end.setMinutes(currentTask.endTime == null ? 10 : currentTask.endTime);
+      const event = {
+        id: currentTask.id,
+        start: moment(start).format(DATETIME_FORMAT),
+        end: moment(end).format(DATETIME_FORMAT),
+        resourceId: employee.id,
+        title: `Task-${currentTask.id}`,
+      };
+      events.push(event);
+      currentTask = currentTask.nextTask;
+    }
+  });
+
+  events.sort((e1, e2) => e1.start.localeCompare(e2));
+  schedulerData.setResources(resources);
+  schedulerData.setEvents(events);
+
+  return { schedulerData, events };
+};
+
 class Schedule extends Component {
   constructor(props) {
     super(props);
 
-    const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Week, true);
-    schedulerData.localeMoment.locale('en');
-
-    const resources = [];
-    const events = [];
-
-    props.bestSolution.TaTaskAssigningSolution.employeeList.TaEmployee.forEach((employee) => {
-      const resource = {
-        id: employee.id,
-        name: employee.fullName,
-      };
-      resources.push(resource);
-
-      let currentTask = employee.nextTask;
-      while (currentTask != null) {
-        const start = new Date(2018, 0);
-        const end = new Date(2018, 0);
-        start.setMinutes(currentTask.startTime == null ? 0 : currentTask.startTime);
-        end.setMinutes(currentTask.endTime == null ? 10 : currentTask.endTime);
-        const event = {
-          id: currentTask.id,
-          start: moment(start).format(DATETIME_FORMAT),
-          end: moment(end).format(DATETIME_FORMAT),
-          resourceId: employee.id,
-          title: `Task-${currentTask.id}`,
-        };
-        events.push(event);
-        currentTask = currentTask.nextTask;
-      }
-    });
-
-    events.sort((e1, e2) => e1.start.localeCompare(e2));
-    schedulerData.setResources(resources);
-    schedulerData.setEvents(events);
+    const { schedulerData, events } = extractScheduler(props.bestSolution);
 
     this.state = {
       schedulerData,
       events,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { schedulerData, events } = extractScheduler(nextProps.bestSolution);
+    this.setState({ schedulerData, events });
   }
 
   prevClick = (schedulerData) => {
@@ -75,6 +86,7 @@ class Schedule extends Component {
     this.setState({ schedulerData });
   }
 
+
   render() {
     return (
       <div className="container">
@@ -94,7 +106,7 @@ class Schedule extends Component {
 
 Schedule.propTypes = {
   bestSolution: PropTypes.shape({
-    TaTaskAssigningSolution: PropTypes.object.isRequired,
+    'best-solution': PropTypes.object.isRequired,
   }).isRequired,
 };
 

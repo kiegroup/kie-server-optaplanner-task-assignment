@@ -39,6 +39,7 @@ class Home extends Component {
       .handleDeploymentModalConfirm.bind(this);
     this.handleConfirmAddSolver = this.addSolver.bind(this);
     this.handleConfirmAddProblem = this.handleConfirmAddProblem.bind(this);
+    this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
@@ -158,6 +159,30 @@ class Home extends Component {
           throw error;
         }
       }, (error) => { throw new Error(error.message); })
+      .catch(error => console.log(error));
+  }
+
+  handleGetSolution(event) {
+    event.preventDefault();
+    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
+      credentials: 'include',
+      headers: {
+        'X-KIE-ContentType': 'xstream',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        }
+        const error = new Error(`${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }, (error) => { throw new Error(error.message); })
+      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
+      .then(response => JXON.build(response))
+      .then((response) => {
+        this.setState({ bestSolution: response['solver-instance'] });
+      })
       .catch(error => console.log(`Caught error: ${error}`));
   }
 
@@ -325,6 +350,7 @@ class Home extends Component {
                 <div className="row">
                   <div className="col">
                     <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
+                    <Button onClick={this.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
                   </div>
                 </div>
               </CardBody>
@@ -366,6 +392,10 @@ class Home extends Component {
         <div className="row">
           <div className="col">
             <Schedule bestSolution={this.state.bestSolution} />
+          </div>
+          <div className="col">
+            Score:&nbsp;
+            {this.state.bestSolution['best-solution'].score}
           </div>
         </div>
       </div>
