@@ -1,17 +1,17 @@
 {
-  "name": "OptaTask",
+  "name": "optatask",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@patternfly/react-core": "^1.35.1",
     "bootstrap": "^4.1.3",
+    "jquery": "^3.3.1",
     "jxon": "^2.0.0-beta.5",
     "moment": "^2.22.2",
+    "popper.js": "^1.14.6",
     "prop-types": "^15.6.2",
     "react": "^16.6.1",
-    "react-big-scheduler": "^0.2.2",
-    "react-dnd": "^7.0.0",
-    "react-dnd-html5-backend": "^7.0.0",
+    "react-big-scheduler": "^0.2.5",
     "react-dom": "^16.6.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1"

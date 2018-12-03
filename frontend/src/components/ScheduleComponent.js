@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Scheduler, { SchedulerData, ViewTypes } from 'react-big-scheduler';
+import Scheduler, {
+  SchedulerData, ViewTypes, DATETIME_FORMAT,
+} from 'react-big-scheduler';
 import 'react-big-scheduler/lib/css/style.css';
-import Moment from 'moment';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-
-// import withDragDropContext from './withDnDContext';
+import moment from 'moment';
 
 class Schedule extends Component {
   constructor(props) {
     super(props);
 
-    console.log(props);
-    const schedulerData = new SchedulerData(new Moment(0).format(), ViewTypes.Day);
+    const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Week, true);
     schedulerData.localeMoment.locale('en');
-
-    const date = new Date(0);
-    console.log(date);
-    console.log(date.toString());
 
     const resources = [];
     const events = [];
@@ -32,25 +25,21 @@ class Schedule extends Component {
 
       let currentTask = employee.nextTask;
       while (currentTask != null) {
-        const start = new Date(0);
-        const end = new Date(0);
+        const start = new Date(2018, 0);
+        const end = new Date(2018, 0);
         start.setMinutes(currentTask.startTime == null ? 0 : currentTask.startTime);
         end.setMinutes(currentTask.endTime == null ? 10 : currentTask.endTime);
         const event = {
-          id: 0, // nextTask.id,
-          start: start.toString(),
-          end: end.toString(),
+          id: currentTask.id,
+          start: moment(start).format(DATETIME_FORMAT),
+          end: moment(end).format(DATETIME_FORMAT),
           resourceId: employee.id,
           title: `Task-${currentTask.id}`,
-          bgColor: '#f759ab',
         };
         events.push(event);
         currentTask = currentTask.nextTask;
       }
     });
-
-    console.log(resources);
-    console.log(events);
 
     events.sort((e1, e2) => e1.start.localeCompare(e2));
     schedulerData.setResources(resources);
@@ -58,10 +47,8 @@ class Schedule extends Component {
 
     this.state = {
       schedulerData,
-      resources,
       events,
     };
-    console.log(this.state);
   }
 
   prevClick = (schedulerData) => {
@@ -111,4 +98,4 @@ Schedule.propTypes = {
   }).isRequired,
 };
 
-export default DragDropContext(HTML5Backend)(Schedule);
+export default Schedule;
