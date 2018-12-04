@@ -1,0 +1,20 @@
+jobs:
+  include:
+    - language: node_js
+      node_js:
+        - "stable"
+      cache:
+        directories:
+          - "$HOME/.npm"
+          - "node_modules"
+      before_install:
+        - "cd frontend"
+      script:
+        - npm test
+        - npm run build
+        - npm install && git diff HEAD --exit-code
+    - language: java
+      jdk: openjdk8
+      before_install:
+        - "cd domain/optatask"
+
