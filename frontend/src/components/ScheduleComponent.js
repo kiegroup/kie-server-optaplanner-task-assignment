@@ -86,7 +86,6 @@ class Schedule extends Component {
     this.setState({ schedulerData });
   }
 
-
   render() {
     return (
       <div className="container">

@@ -10,7 +10,7 @@ import Schedule from './ScheduleComponent';
 import PROBLEM from '../shared/24tasks';
 import BEST_SOLUTION from '../shared/24tasksBestSolution';
 
-const baseURI = '/kie-server/services/rest/server';
+const BASE_URI = '/kie-server/services/rest/server';
 
 class Home extends Component {
   constructor(props) {
@@ -33,24 +33,15 @@ class Home extends Component {
     };
 
     this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
-    this.handleAddSolverModalToggle = this.handleAddSolverModalToggle.bind(this);
     this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
-    this.handleDeploymentModalConfirm = this
-      .handleDeploymentModalConfirm.bind(this);
-    this.handleConfirmAddSolver = this.addSolver.bind(this);
-    this.handleConfirmAddProblem = this.handleConfirmAddProblem.bind(this);
+    this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
+    this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
     this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
     this.setState(({ isDeploymentModalOpen }) => ({
       isDeploymentModalOpen: !isDeploymentModalOpen,
-    }));
-  }
-
-  handleAddSolverModalToggle = () => {
-    this.setState(({ isAddSolverModalOpen }) => ({
-      isAddSolverModalOpen: !isAddSolverModalOpen,
     }));
   }
 
@@ -83,7 +74,7 @@ class Home extends Component {
     };
 
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${baseURI}/config`, {
+    fetch(`${BASE_URI}/config`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -114,7 +105,7 @@ class Home extends Component {
       },
     };
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -137,11 +128,11 @@ class Home extends Component {
       .catch(error => console.log(`Caught error: ${error}`));
   }
 
-  handleConfirmAddProblem(event) {
+  handleAddProblemModalConfirm(event) {
     event.preventDefault();
     this.handleAddProblemModalToggle();
 
-    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -164,7 +155,7 @@ class Home extends Component {
 
   handleGetSolution(event) {
     event.preventDefault();
-    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
       credentials: 'include',
       headers: {
         'X-KIE-ContentType': 'xstream',
@@ -377,7 +368,7 @@ class Home extends Component {
                 <ActionGroup>
                   <Toolbar>
                     <ToolbarGroup>
-                      <Button key="confirmAddProblem" variant="primary" onClick={this.handleConfirmAddProblem}>Add</Button>
+                      <Button key="confirmAddProblem" variant="primary" onClick={this.handleAddProblemModalConfirm}>Add</Button>
                     </ToolbarGroup>
                     <ToolbarGroup>
                       <Button key="cancelAddProblem" variant="secondary" onClick={this.handleAddProblemModalToggle}>Cancel</Button>
