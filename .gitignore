@@ -3,12 +3,16 @@
 
 # Eclipse, Netbeans and IntelliJ files
 /.*
+!.travis.yml
 !.gitignore
 !.gitattributes
 /nbproject
 /*.ipr
 /*.iws
 /*.iml
+
+# Visual Studio Code
+/.vscode
 
 # Repository wide ignore mac DS_Store files
 .DS_Store
