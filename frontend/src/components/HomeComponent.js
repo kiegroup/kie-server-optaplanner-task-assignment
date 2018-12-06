@@ -172,7 +172,12 @@ class Home extends Component {
       .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
       .then(response => JXON.build(response))
       .then((response) => {
-        this.setState({ bestSolution: response['solver-instance'] });
+        if (Object.prototype.hasOwnProperty.call(response['solver-instance'], 'best-solution')) {
+          console.log(response['solver-instance']['best-solution']);
+          this.setState({ bestSolution: response['solver-instance']['best-solution'] });
+        } else {
+          alert('Solver is not solving');
+        }
       })
       .catch(error => console.log(`Caught error: ${error}`));
   }
@@ -386,7 +391,7 @@ class Home extends Component {
           </div>
           <div className="col">
             Score:&nbsp;
-            {this.state.bestSolution['best-solution'].score}
+            {this.state.bestSolution.score}
           </div>
         </div>
       </div>

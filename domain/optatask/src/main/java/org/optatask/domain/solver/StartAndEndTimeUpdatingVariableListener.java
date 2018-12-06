@@ -23,7 +23,7 @@ import org.optaplanner.core.impl.score.director.ScoreDirector;
 import org.optatask.domain.Task;
 import org.optatask.domain.TaskOrEmployee;
 
-public class StartTimeUpdatingVariableListener implements VariableListener<Task> {
+public class StartAndEndTimeUpdatingVariableListener implements VariableListener<Task> {
 
     @Override
     public void beforeEntityAdded(ScoreDirector scoreDirector, Task task) {
@@ -32,7 +32,7 @@ public class StartTimeUpdatingVariableListener implements VariableListener<Task>
 
     @Override
     public void afterEntityAdded(ScoreDirector scoreDirector, Task task) {
-        updateStartTime(scoreDirector, task);
+        updateStartAndEndTime(scoreDirector, task);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class StartTimeUpdatingVariableListener implements VariableListener<Task>
 
     @Override
     public void afterVariableChanged(ScoreDirector scoreDirector, Task task) {
-        updateStartTime(scoreDirector, task);
+        updateStartAndEndTime(scoreDirector, task);
     }
 
     @Override
@@ -55,18 +55,25 @@ public class StartTimeUpdatingVariableListener implements VariableListener<Task>
         // Do nothing
     }
 
-    protected void updateStartTime(ScoreDirector scoreDirector, Task sourceTask) {
+    protected void updateStartAndEndTime(ScoreDirector scoreDirector, Task sourceTask) {
         TaskOrEmployee previous = sourceTask.getPreviousTaskOrEmployee();
         Task shadowTask = sourceTask;
         Integer previousEndTime = (previous == null ? null : previous.getEndTime());
         Integer startTime = calculateStartTime(shadowTask, previousEndTime);
+        Integer endTime = calculateEndTime(shadowTask, startTime);
         while (shadowTask != null && !Objects.equals(shadowTask.getStartTime(), startTime)) {
             scoreDirector.beforeVariableChanged(shadowTask, "startTime");
             shadowTask.setStartTime(startTime);
             scoreDirector.afterVariableChanged(shadowTask, "startTime");
+
+            scoreDirector.beforeVariableChanged(shadowTask, "endTime");
+            shadowTask.setEndTime(endTime);
+            scoreDirector.afterVariableChanged(shadowTask, "endTime");
+
             previousEndTime = shadowTask.getEndTime();
             shadowTask = shadowTask.getNextTask();
             startTime = calculateStartTime(shadowTask, previousEndTime);
+            endTime = calculateEndTime(shadowTask, startTime);
         }
     }
 
@@ -75,6 +82,10 @@ public class StartTimeUpdatingVariableListener implements VariableListener<Task>
             return null;
         }
         return Math.max(task.getReadyTime(), previousEndTime);
+    }
+
+    private Integer calculateEndTime(Task shadowTask, Integer startTime) {
+        return startTime == null || shadowTask == null ? 0 : startTime + shadowTask.getDuration();
     }
 
 }

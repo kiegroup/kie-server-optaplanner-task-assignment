@@ -35,37 +35,37 @@ export default {
           id: '0',
           code: 'IS',
           title: 'Improve Sales',
-          baseDuration: '46',
+          baseDuration: '30',
           requiredSkillList: {
-            TaSkill: {
-              $reference: '../../../../skillList/TaSkill[6]',
-            },
+            TaSkill: [
+              {
+                $reference: '../../../../skillList/TaSkill[2]',
+              },
+              {
+                $reference: '../../../../skillList/TaSkill',
+              },
+            ],
           },
         },
         {
           id: '1',
           code: 'ET',
           title: 'Expand Tax',
-          baseDuration: '63',
+          baseDuration: '30',
           requiredSkillList: {
-            TaSkill: [
-              {
-                $reference: '../../../../skillList/TaSkill',
-              },
-              {
-                $reference: '../../../../skillList/TaSkill[2]',
-              },
-            ],
+            TaSkill: {
+              $reference: '../../../../skillList/TaSkill',
+            },
           },
         },
         {
           id: '2',
           code: 'SV',
           title: 'Shrink VAT',
-          baseDuration: '63',
+          baseDuration: '30',
           requiredSkillList: {
             TaSkill: {
-              $reference: '../../../../skillList/TaSkill[6]',
+              $reference: '../../../../skillList/TaSkill',
             },
           },
         },
@@ -73,11 +73,16 @@ export default {
           id: '3',
           code: 'AL',
           title: 'Approve Legal',
-          baseDuration: '40',
+          baseDuration: '30',
           requiredSkillList: {
-            TaSkill: {
-              $reference: '../../../../skillList/TaSkill[4]',
-            },
+            TaSkill: [
+              {
+                $reference: '../../../../skillList/TaSkill[3]',
+              },
+              {
+                $reference: '../../../../skillList/TaSkill[2]',
+              },
+            ],
           },
         },
       ],
@@ -475,44 +480,70 @@ export default {
         {
           id: '0',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[3]',
-          },
-          indexInTaskType: '1',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[2]',
-          },
-          readyTime: '0',
-          priority: 'MINOR',
-          pinned: 'false',
-        },
-        {
-          id: '1',
-          taskType: {
             $reference: '../../../taskTypeList/TaTaskType[4]',
           },
           indexInTaskType: '1',
           customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
+            $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
           priority: 'MAJOR',
           pinned: 'false',
         },
         {
-          id: '2',
+          id: '1',
           taskType: {
             $reference: '../../../taskTypeList/TaTaskType[3]',
+          },
+          indexInTaskType: '1',
+          customer: {
+            $reference: '../../../customerList/TaCustomer[3]',
+          },
+          readyTime: '0',
+          priority: 'CRITICAL',
+          pinned: 'false',
+        },
+        {
+          id: '2',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[4]',
           },
           indexInTaskType: '2',
           customer: {
             $reference: '../../../customerList/TaCustomer[4]',
           },
           readyTime: '0',
-          priority: 'MAJOR',
+          priority: 'CRITICAL',
           pinned: 'false',
         },
         {
           id: '3',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[4]',
+          },
+          indexInTaskType: '3',
+          customer: {
+            $reference: '../../../customerList/TaCustomer[3]',
+          },
+          readyTime: '0',
+          priority: 'CRITICAL',
+          pinned: 'false',
+        },
+        {
+          id: '4',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[4]',
+          },
+          indexInTaskType: '4',
+          customer: {
+            $reference: '../../../customerList/TaCustomer',
+          },
+          readyTime: '0',
+          priority: 'MAJOR',
+          pinned: 'false',
+        },
+        {
+          id: '5',
           taskType: {
             $reference: '../../../taskTypeList/TaTaskType',
           },
@@ -525,39 +556,13 @@ export default {
           pinned: 'false',
         },
         {
-          id: '4',
-          taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[4]',
-          },
-          indexInTaskType: '2',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[3]',
-          },
-          readyTime: '0',
-          priority: 'MINOR',
-          pinned: 'false',
-        },
-        {
-          id: '5',
-          taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[4]',
-          },
-          indexInTaskType: '3',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[3]',
-          },
-          readyTime: '0',
-          priority: 'MINOR',
-          pinned: 'false',
-        },
-        {
           id: '6',
           taskType: {
             $reference: '../../../taskTypeList/TaTaskType[2]',
           },
           indexInTaskType: '1',
           customer: {
-            $reference: '../../../customerList/TaCustomer[2]',
+            $reference: '../../../customerList/TaCustomer[4]',
           },
           readyTime: '0',
           priority: 'MINOR',
@@ -570,7 +575,7 @@ export default {
           },
           indexInTaskType: '2',
           customer: {
-            $reference: '../../../customerList/TaCustomer',
+            $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
           priority: 'MINOR',
@@ -579,63 +584,63 @@ export default {
         {
           id: '8',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[2]',
+            $reference: '../../../taskTypeList/TaTaskType',
           },
-          indexInTaskType: '3',
+          indexInTaskType: '2',
           customer: {
-            $reference: '../../../customerList/TaCustomer',
+            $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
-          priority: 'MINOR',
+          priority: 'MAJOR',
           pinned: 'false',
         },
         {
           id: '9',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[3]',
+            $reference: '../../../taskTypeList/TaTaskType[2]',
           },
           indexInTaskType: '3',
           customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
-          },
-          readyTime: '0',
-          priority: 'MAJOR',
-          pinned: 'false',
-        },
-        {
-          id: '10',
-          taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
-          },
-          indexInTaskType: '2',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
+            $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
           priority: 'MINOR',
           pinned: 'false',
         },
         {
+          id: '10',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[4]',
+          },
+          indexInTaskType: '5',
+          customer: {
+            $reference: '../../../customerList/TaCustomer[3]',
+          },
+          readyTime: '0',
+          priority: 'CRITICAL',
+          pinned: 'false',
+        },
+        {
           id: '11',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[2]',
+            $reference: '../../../taskTypeList/TaTaskType[4]',
           },
-          indexInTaskType: '4',
+          indexInTaskType: '6',
           customer: {
             $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
-          priority: 'MAJOR',
+          priority: 'CRITICAL',
           pinned: 'false',
         },
         {
           id: '12',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
+            $reference: '../../../taskTypeList/TaTaskType[2]',
           },
-          indexInTaskType: '3',
+          indexInTaskType: '4',
           customer: {
-            $reference: '../../../customerList/TaCustomer[3]',
+            $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
           priority: 'MINOR',
@@ -644,40 +649,40 @@ export default {
         {
           id: '13',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[2]',
+            $reference: '../../../taskTypeList/TaTaskType[4]',
           },
-          indexInTaskType: '5',
+          indexInTaskType: '7',
           customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
-          },
-          readyTime: '0',
-          priority: 'MAJOR',
-          pinned: 'false',
-        },
-        {
-          id: '14',
-          taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[2]',
-          },
-          indexInTaskType: '6',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[3]',
+            $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
           priority: 'CRITICAL',
           pinned: 'false',
         },
         {
-          id: '15',
+          id: '14',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[2]',
+            $reference: '../../../taskTypeList/TaTaskType[3]',
           },
-          indexInTaskType: '7',
+          indexInTaskType: '2',
           customer: {
             $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
-          priority: 'MINOR',
+          priority: 'MAJOR',
+          pinned: 'false',
+        },
+        {
+          id: '15',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[4]',
+          },
+          indexInTaskType: '8',
+          customer: {
+            $reference: '../../../customerList/TaCustomer[2]',
+          },
+          readyTime: '0',
+          priority: 'CRITICAL',
           pinned: 'false',
         },
         {
@@ -685,44 +690,31 @@ export default {
           taskType: {
             $reference: '../../../taskTypeList/TaTaskType[4]',
           },
-          indexInTaskType: '4',
+          indexInTaskType: '9',
           customer: {
-            $reference: '../../../customerList/TaCustomer[3]',
+            $reference: '../../../customerList/TaCustomer[2]',
           },
           readyTime: '0',
-          priority: 'MAJOR',
+          priority: 'MINOR',
           pinned: 'false',
         },
         {
           id: '17',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[4]',
+            $reference: '../../../taskTypeList/TaTaskType',
           },
-          indexInTaskType: '5',
+          indexInTaskType: '3',
           customer: {
-            $reference: '../../../customerList/TaCustomer',
+            $reference: '../../../customerList/TaCustomer[4]',
           },
           readyTime: '0',
-          priority: 'MAJOR',
+          priority: 'CRITICAL',
           pinned: 'false',
         },
         {
           id: '18',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
-          },
-          indexInTaskType: '4',
-          customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
-          },
-          readyTime: '0',
-          priority: 'MAJOR',
-          pinned: 'false',
-        },
-        {
-          id: '19',
-          taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
+            $reference: '../../../taskTypeList/TaTaskType[2]',
           },
           indexInTaskType: '5',
           customer: {
@@ -733,11 +725,11 @@ export default {
           pinned: 'false',
         },
         {
-          id: '20',
+          id: '19',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
+            $reference: '../../../taskTypeList/TaTaskType[3]',
           },
-          indexInTaskType: '6',
+          indexInTaskType: '3',
           customer: {
             $reference: '../../../customerList/TaCustomer',
           },
@@ -746,16 +738,29 @@ export default {
           pinned: 'false',
         },
         {
-          id: '21',
+          id: '20',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType',
+            $reference: '../../../taskTypeList/TaTaskType[4]',
           },
-          indexInTaskType: '7',
+          indexInTaskType: '10',
           customer: {
-            $reference: '../../../customerList/TaCustomer[2]',
+            $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
-          priority: 'MAJOR',
+          priority: 'CRITICAL',
+          pinned: 'false',
+        },
+        {
+          id: '21',
+          taskType: {
+            $reference: '../../../taskTypeList/TaTaskType[3]',
+          },
+          indexInTaskType: '4',
+          customer: {
+            $reference: '../../../customerList/TaCustomer',
+          },
+          readyTime: '0',
+          priority: 'CRITICAL',
           pinned: 'false',
         },
         {
@@ -763,22 +768,22 @@ export default {
           taskType: {
             $reference: '../../../taskTypeList/TaTaskType',
           },
-          indexInTaskType: '8',
+          indexInTaskType: '4',
           customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
+            $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
-          priority: 'CRITICAL',
+          priority: 'MAJOR',
           pinned: 'false',
         },
         {
           id: '23',
           taskType: {
-            $reference: '../../../taskTypeList/TaTaskType[4]',
+            $reference: '../../../taskTypeList/TaTaskType[3]',
           },
-          indexInTaskType: '6',
+          indexInTaskType: '5',
           customer: {
-            $reference: '../../../customerList/TaCustomer[4]',
+            $reference: '../../../customerList/TaCustomer',
           },
           readyTime: '0',
           priority: 'MINOR',
@@ -786,7 +791,6 @@ export default {
         },
       ],
     },
-    score: '-24init/[0]hard/[0/0/0/0]soft',
     frozenCutoff: '0',
   },
 };

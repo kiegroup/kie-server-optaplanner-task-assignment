@@ -7,13 +7,14 @@ import 'react-big-scheduler/lib/css/style.css';
 import moment from 'moment';
 
 const extractScheduler = (bestSolution) => {
-  const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Week, true);
+  const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Day);
   schedulerData.localeMoment.locale('en');
+  schedulerData.config.dayCellWidth = 100;
 
   const resources = [];
   const events = [];
 
-  bestSolution['best-solution'].employeeList.TaEmployee.forEach((employee) => {
+  bestSolution.employeeList.TaEmployee.forEach((employee) => {
     const resource = {
       id: employee.id,
       name: employee.fullName,
@@ -105,7 +106,7 @@ class Schedule extends Component {
 
 Schedule.propTypes = {
   bestSolution: PropTypes.shape({
-    'best-solution': PropTypes.object.isRequired,
+    employeeList: PropTypes.object.isRequired,
   }).isRequired,
 };
 

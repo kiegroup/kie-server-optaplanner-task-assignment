@@ -24,7 +24,7 @@ import org.optaplanner.core.api.domain.variable.CustomShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariableGraphType;
 import org.optaplanner.core.api.domain.variable.PlanningVariableReference;
-import org.optatask.domain.solver.StartTimeUpdatingVariableListener;
+import org.optatask.domain.solver.StartAndEndTimeUpdatingVariableListener;
 import org.optatask.domain.solver.TaskDifficultyComparator;
 
 @PlanningEntity(difficultyComparatorClass = TaskDifficultyComparator.class)
@@ -48,12 +48,14 @@ public class Task extends TaskOrEmployee {
     // Task nextTask inherited from superclass
     @AnchorShadowVariable(sourceVariableName = "previousTaskOrEmployee")
     private Employee employee;
-    @CustomShadowVariable(variableListenerClass = StartTimeUpdatingVariableListener.class,
+    @CustomShadowVariable(variableListenerClass = StartAndEndTimeUpdatingVariableListener.class,
             // Arguable, to adhere to API specs (although this works), nextTask and employee should also be a source,
             // because this shadow must be triggered after nextTask and employee (but there is no need to be triggered by those)
             sources = {@PlanningVariableReference(variableName = "previousTaskOrEmployee")})
     private Integer startTime; // In minutes
-    private Integer endTime;
+    @CustomShadowVariable(variableListenerClass = StartAndEndTimeUpdatingVariableListener.class,
+            sources = {@PlanningVariableReference(variableName = "previousTaskOrEmployee")})
+    private Integer endTime; // In minutes
 
     public Task() {
     }
@@ -139,7 +141,15 @@ public class Task extends TaskOrEmployee {
 
     public void setStartTime(Integer startTime) {
         this.startTime = startTime;
-        this.endTime = startTime == null ? null : startTime + getDuration();
+    }
+
+    @Override
+    public Integer getEndTime() {
+        return endTime == null ? 0 : endTime;
+    }
+
+    public void setEndTime(Integer endTime) {
+        this.endTime = endTime;
     }
 
     // ************************************************************************
@@ -172,14 +182,6 @@ public class Task extends TaskOrEmployee {
         return (employee == null) ? Affinity.NONE : employee.getAffinity(customer);
     }
 
-    @Override
-    public Integer getEndTime() {
-        if (startTime == null) {
-            return null;
-        }
-        return startTime + getDuration();
-    }
-
     public String getCode() {
         return taskType + "-" + indexInTaskType;
     }
@@ -210,5 +212,4 @@ public class Task extends TaskOrEmployee {
     public String toString() {
         return getCode();
     }
-
 }
