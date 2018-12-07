@@ -53,8 +53,7 @@ public class Task extends TaskOrEmployee {
             // because this shadow must be triggered after nextTask and employee (but there is no need to be triggered by those)
             sources = {@PlanningVariableReference(variableName = "previousTaskOrEmployee")})
     private Integer startTime; // In minutes
-    @CustomShadowVariable(variableListenerClass = StartAndEndTimeUpdatingVariableListener.class,
-            sources = {@PlanningVariableReference(variableName = "previousTaskOrEmployee")})
+    @CustomShadowVariable(variableListenerRef = @PlanningVariableReference(variableName = "startTime"))
     private Integer endTime; // In minutes
 
     public Task() {

@@ -95,7 +95,7 @@ class Home extends Component {
       .then(response => JXON.build(response))
       .then(response => alert(JSON.stringify(response.responses.response)))
       .then(() => this.addSolver())
-      .catch(error => console.log(`Caught error: ${error}`));
+      .catch(error => console.log(error));
   }
 
   addSolver() {
@@ -125,7 +125,7 @@ class Home extends Component {
       .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
       .then(response => JXON.build(response))
       .then(response => alert(JSON.stringify(response)))
-      .catch(error => console.log(`Caught error: ${error}`));
+      .catch(error => console.log(error));
   }
 
   handleAddProblemModalConfirm(event) {
@@ -173,13 +173,12 @@ class Home extends Component {
       .then(response => JXON.build(response))
       .then((response) => {
         if (Object.prototype.hasOwnProperty.call(response['solver-instance'], 'best-solution')) {
-          console.log(response['solver-instance']['best-solution']);
           this.setState({ bestSolution: response['solver-instance']['best-solution'] });
         } else {
           alert('Solver is not solving');
         }
       })
-      .catch(error => console.log(`Caught error: ${error}`));
+      .catch(error => console.log(error));
   }
 
   render() {
