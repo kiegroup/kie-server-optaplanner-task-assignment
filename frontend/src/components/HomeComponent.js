@@ -3,17 +3,20 @@ import {
   Card, CardHeader, CardBody, Button, Modal,
   Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup, TextArea,
 } from '@patternfly/react-core';
-
 import JXON from 'jxon';
 
-const baseURI = '/kie-server/services/rest/server';
+import Schedule from './ScheduleComponent';
+
+import PROBLEM from '../shared/24tasks';
+import BEST_SOLUTION from '../shared/24tasksBestSolution';
+
+const BASE_URI = '/kie-server/services/rest/server';
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isAddContainerModalOpen: false,
-      isAddSolverModalOpen: false,
+      isDeploymentModalOpen: false,
       isAddProblemModalOpen: false,
       container: {
         containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
@@ -25,27 +28,20 @@ class Home extends Component {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      problem: '',
+      problem: PROBLEM,
+      bestSolution: BEST_SOLUTION,
     };
 
-    this.handleAddContainerModalToggle = this.handleAddContainerModalToggle.bind(this);
-    this.handleAddSolverModalToggle = this.handleAddSolverModalToggle.bind(this);
+    this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
     this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
-    this.handleAddContainerModalConfirmDeployment = this
-      .handleAddContainerModalConfirmDeployment.bind(this);
-    this.handleConfirmAddSolver = this.handleConfirmAddSolver.bind(this);
-    this.handleConfirmAddProblem = this.handleConfirmAddProblem.bind(this);
+    this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
+    this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
+    this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
-  handleAddContainerModalToggle = () => {
-    this.setState(({ isAddContainerModalOpen }) => ({
-      isAddContainerModalOpen: !isAddContainerModalOpen,
-    }));
-  }
-
-  handleAddSolverModalToggle = () => {
-    this.setState(({ isAddSolverModalOpen }) => ({
-      isAddSolverModalOpen: !isAddSolverModalOpen,
+  handleDeploymentModalToggle = () => {
+    this.setState(({ isDeploymentModalOpen }) => ({
+      isDeploymentModalOpen: !isDeploymentModalOpen,
     }));
   }
 
@@ -55,9 +51,9 @@ class Home extends Component {
     }));
   }
 
-  handleAddContainerModalConfirmDeployment(event) {
+  handleDeploymentModalConfirm(event) {
     event.preventDefault();
-    this.handleAddContainerModalToggle();
+    this.handleDeploymentModalToggle();
     const body = {
       script: {
         commands: [
@@ -78,7 +74,7 @@ class Home extends Component {
     };
 
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${baseURI}/config`, {
+    fetch(`${BASE_URI}/config`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -98,20 +94,18 @@ class Home extends Component {
       .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
       .then(response => JXON.build(response))
       .then(response => alert(JSON.stringify(response.responses.response)))
-      .catch(error => console.log(`Caught error: ${error}`));
+      .then(() => this.addSolver())
+      .catch(error => console.log(error));
   }
 
-  handleConfirmAddSolver(event) {
-    event.preventDefault();
-    this.handleAddSolverModalToggle();
-
+  addSolver() {
     const body = {
       'solver-instance': {
         'solver-config-file': this.state.solver.configFilePath,
       },
     };
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -131,21 +125,21 @@ class Home extends Component {
       .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
       .then(response => JXON.build(response))
       .then(response => alert(JSON.stringify(response)))
-      .catch(error => console.log(`Caught error: ${error}`));
+      .catch(error => console.log(error));
   }
 
-  handleConfirmAddProblem(event) {
+  handleAddProblemModalConfirm(event) {
     event.preventDefault();
     this.handleAddProblemModalToggle();
 
-    fetch(`${baseURI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'X-KIE-ContentType': 'xstream',
         'Content-Type': 'application/xml',
       },
-      body: this.state.problem,
+      body: JXON.xmlToString(JXON.jsToXml(this.state.problem)),
     })
       .then((response) => {
         if (response.ok) {
@@ -156,33 +150,65 @@ class Home extends Component {
           throw error;
         }
       }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(`Caught error: ${error}`));
+      .catch(error => console.log(error));
+  }
+
+  handleGetSolution(event) {
+    event.preventDefault();
+    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
+      credentials: 'include',
+      headers: {
+        'X-KIE-ContentType': 'xstream',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        }
+        const error = new Error(`${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }, (error) => { throw new Error(error.message); })
+      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
+      .then(response => JXON.build(response))
+      .then((response) => {
+        if (Object.prototype.hasOwnProperty.call(response['solver-instance'], 'best-solution')) {
+          this.setState({ bestSolution: response['solver-instance']['best-solution'] });
+        } else {
+          alert('Solver is not solving');
+        }
+      })
+      .catch(error => console.log(error));
   }
 
   render() {
     return (
       <div className="container">
         <br />
-        <Card className="text-center">
-          <CardHeader>Deployment</CardHeader>
-          <CardBody>
-            <div className="row">
-              <div className="col">
-                Deploy a task assignment container into KIE server
-              </div>
-            </div>
-            <br />
-            <div className="row">
-              <div className="col">
-                <Button onClick={this.handleAddContainerModalToggle} variant="primary">Add a container</Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
+        <div className="row mb-3">
+          <div className="col">
+            <Card className="text-center">
+              <CardHeader>Deployment</CardHeader>
+              <CardBody>
+                <div className="row">
+                  <div className="col">
+                    Deploy a task assignment container into KIE server and start a solver
+                  </div>
+                </div>
+                <br />
+                <div className="row">
+                  <div className="col">
+                    <Button onClick={this.handleDeploymentModalToggle} variant="primary">Add a container</Button>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        </div>
         <Modal
           title="Add container"
-          isOpen={this.state.isAddContainerModalOpen}
-          onClose={this.handleAddContainerModalToggle}
+          isOpen={this.state.isDeploymentModalOpen}
+          onClose={this.handleDeploymentModalToggle}
         >
           <Form>
             <FormGroup
@@ -258,42 +284,6 @@ class Home extends Component {
                 }}
               />
             </FormGroup>
-            <ActionGroup>
-              <Toolbar>
-                <ToolbarGroup>
-                  <Button key="confirmDeployment" variant="primary" onClick={this.handleAddContainerModalConfirmDeployment}>Deploy</Button>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                  <Button key="cancelDeployment" variant="secondary" onClick={this.handleAddContainerModalToggle}>Cancel</Button>
-                </ToolbarGroup>
-              </Toolbar>
-            </ActionGroup>
-          </Form>
-        </Modal>
-        <br />
-
-        <Card className="text-center">
-          <CardHeader>Solver</CardHeader>
-          <CardBody>
-            <div className="row">
-              <div className="col">
-                Add a new solver to the container
-              </div>
-            </div>
-            <br />
-            <div className="row">
-              <div className="col">
-                <Button onClick={this.handleAddSolverModalToggle} variant="primary">Add a solver</Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-        <Modal
-          title="Add solver"
-          isOpen={this.state.isAddSolverModalOpen}
-          onClose={this.handleAddSolverModalToggle}
-        >
-          <Form>
             <FormGroup
               label="Solver Id"
               isRequired
@@ -331,64 +321,78 @@ class Home extends Component {
             <ActionGroup>
               <Toolbar>
                 <ToolbarGroup>
-                  <Button key="confirmAddSolver" variant="primary" onClick={this.handleConfirmAddSolver}>Add</Button>
+                  <Button key="confirmDeployment" variant="primary" onClick={this.handleDeploymentModalConfirm}>Deploy</Button>
                 </ToolbarGroup>
                 <ToolbarGroup>
-                  <Button key="cancelAddSolver" variant="secondary" onClick={this.handleAddContainerModalToggle}>Cancel</Button>
+                  <Button key="cancelDeployment" variant="secondary" onClick={this.handleDeploymentModalToggle}>Cancel</Button>
                 </ToolbarGroup>
               </Toolbar>
             </ActionGroup>
           </Form>
         </Modal>
-        <br />
 
-        <Card className="text-center">
-          <CardHeader>New problem</CardHeader>
-          <CardBody>
-            <div className="row">
-              <div className="col">
-                Submit a task assignment problem and start solving it
-              </div>
-            </div>
-            <br />
-            <div className="row">
-              <div className="col">
-                <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-        <Modal
-          title="Add problem"
-          isOpen={this.state.isAddProblemModalOpen}
-          onClose={this.handleAddProblemModalToggle}
-        >
-          <Form>
-            <FormGroup
-              label="Problem"
-              isRequired
-              fieldId="problem"
+        <div className="row mb-3">
+          <div className="col">
+            <Card className="text-center">
+              <CardHeader>New problem</CardHeader>
+              <CardBody>
+                <div className="row">
+                  <div className="col">
+                    Submit a task assignment problem and start solving it
+                  </div>
+                </div>
+                <br />
+                <div className="row">
+                  <div className="col">
+                    <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
+                    <Button onClick={this.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+            <Modal
+              title="Add problem"
+              isOpen={this.state.isAddProblemModalOpen}
+              onClose={this.handleAddProblemModalToggle}
             >
-              <TextArea
-                isRequired
-                id="problem"
-                size="200"
-                value={this.state.problem}
-                onChange={(problem) => { this.setState({ problem }); }}
-              />
-            </FormGroup>
-            <ActionGroup>
-              <Toolbar>
-                <ToolbarGroup>
-                  <Button key="confirmAddProblem" variant="primary" onClick={this.handleConfirmAddProblem}>Add</Button>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                  <Button key="cancelAddProblem" variant="secondary" onClick={this.handleAddProblemModalToggle}>Cancel</Button>
-                </ToolbarGroup>
-              </Toolbar>
-            </ActionGroup>
-          </Form>
-        </Modal>
+              <Form>
+                <FormGroup
+                  label="Problem"
+                  isRequired
+                  fieldId="problem"
+                >
+                  <TextArea
+                    isRequired
+                    id="problem"
+                    size="200"
+                    value={JXON.xmlToString(JXON.jsToXml(this.state.problem))}
+                    onChange={(problem) => { this.setState({ problem }); }}
+                  />
+                </FormGroup>
+                <ActionGroup>
+                  <Toolbar>
+                    <ToolbarGroup>
+                      <Button key="confirmAddProblem" variant="primary" onClick={this.handleAddProblemModalConfirm}>Add</Button>
+                    </ToolbarGroup>
+                    <ToolbarGroup>
+                      <Button key="cancelAddProblem" variant="secondary" onClick={this.handleAddProblemModalToggle}>Cancel</Button>
+                    </ToolbarGroup>
+                  </Toolbar>
+                </ActionGroup>
+              </Form>
+            </Modal>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col">
+            <Schedule bestSolution={this.state.bestSolution} />
+          </div>
+          <div className="col">
+            Score:&nbsp;
+            {this.state.bestSolution.score}
+          </div>
+        </div>
       </div>
     );
   }
