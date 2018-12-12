@@ -23,8 +23,8 @@ public class AddTaskProblemFactChange extends AbstractPersistable implements Pro
         this.customerId = customerId;
     }
 
-    public AddTaskProblemFactChange(Long id, Task task, Long taskTypeId, Long customerId) {
-        super(id);
+    public AddTaskProblemFactChange(Long taskId, Task task, Long taskTypeId, Long customerId) {
+        super(taskId);
         this.task = task;
         this.taskTypeId = taskTypeId;
         this.customerId = customerId;
