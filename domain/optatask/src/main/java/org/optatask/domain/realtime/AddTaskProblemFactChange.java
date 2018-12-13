@@ -23,13 +23,6 @@ public class AddTaskProblemFactChange extends AbstractPersistable implements Pro
         this.customerId = customerId;
     }
 
-    public AddTaskProblemFactChange(Long taskId, Task task, Long taskTypeId, Long customerId) {
-        super(taskId);
-        this.task = task;
-        this.taskTypeId = taskTypeId;
-        this.customerId = customerId;
-    }
-
     @Override
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
         TaskAssigningSolution solution = scoreDirector.getWorkingSolution();

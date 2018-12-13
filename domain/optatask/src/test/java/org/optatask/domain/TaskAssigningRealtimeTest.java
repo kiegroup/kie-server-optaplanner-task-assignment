@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Test;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
@@ -14,6 +13,7 @@ import org.optaplanner.core.api.solver.event.BestSolutionChangedEvent;
 import org.optaplanner.core.api.solver.event.SolverEventListener;
 import org.optaplanner.core.config.solver.termination.TerminationConfig;
 import org.optatask.domain.realtime.AddTaskProblemFactChange;
+import org.optatask.domain.realtime.DeleteTaskProblemFactChange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TaskAssigningRealtimeTest {
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String SOLVER_CONFIG = "org/optatask/solver/taskAssigningSolverConfig.xml";
+    public final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Object stageLock = new Object();
     private AtomicInteger stageNumber = new AtomicInteger(0);
@@ -32,8 +33,7 @@ public class TaskAssigningRealtimeTest {
     private volatile Throwable solverThreadException = null;
 
     @Test(timeout = 600000)
-    public void addTaskProblemFactChange() throws InterruptedException {
-        BasicConfigurator.configure();
+    public void addAndRemoveTaskProblemFactChange() throws InterruptedException {
         Solver<TaskAssigningSolution> solver = buildSolver();
         TaskAssigningSolution solution = buildProblem();
         SolverThread solverThread = new SolverThread(solver, solution);
@@ -47,13 +47,19 @@ public class TaskAssigningRealtimeTest {
         int numberOfTasks = 5;
         for (int i = 0; i < numberOfTasks; i++) {
             Task task = new Task();
-            task.setId((long) i);
             task.setTaskType(solution.getTaskTypeList().get(0));
             task.setCustomer(solution.getCustomerList().get(0));
             solver.addProblemFactChange(new AddTaskProblemFactChange(task, 0L, 0L));
         }
         waitForNextStage();
         assertEquals(numberOfTasks, (solver.getBestSolution()).getTaskList().size());
+
+        for (int i = 0; i < numberOfTasks; i++) {
+            solver.addProblemFactChange(new DeleteTaskProblemFactChange((long) i));
+        }
+
+        waitForNextStage();
+        assertEquals(0, (solver.getBestSolution()).getTaskList().size());
 
         solver.terminateEarly();
         try {
@@ -68,7 +74,7 @@ public class TaskAssigningRealtimeTest {
 
     private Solver<TaskAssigningSolution> buildSolver() {
         SolverFactory<TaskAssigningSolution> solverFactory = SolverFactory.createFromXmlResource(
-                "org/optatask/solver/taskAssigningSolverConfig.xml");
+                SOLVER_CONFIG);
         solverFactory.getSolverConfig().setTerminationConfig(new TerminationConfig().withBestScoreFeasible(true));
         return solverFactory.buildSolver();
     }
@@ -89,19 +95,21 @@ public class TaskAssigningRealtimeTest {
 
         TaskType taskType = new TaskType();
         taskType.setId(0L);
+        taskType.setCode("type0");
         taskType.setRequiredSkillList(new ArrayList<>());
         solution.getTaskTypeList().add(taskType);
 
         Customer customer = new Customer();
         customer.setId(0L);
+        customer.setName("customer0");
         solution.getCustomerList().add(customer);
 
         Employee employee = new Employee();
         employee.setId(0L);
+        employee.setFullName("employee0");
         employee.setSkillSet(new HashSet<>());
         employee.setAffinityMap(new HashMap<>());
         solution.getEmployeeList().add(employee);
-
 
         return solution;
     }
