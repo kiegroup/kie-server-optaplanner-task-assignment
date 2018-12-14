@@ -36,6 +36,8 @@ public class DeleteTaskProblemFactChange extends AbstractPersistable implements 
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
         TaskAssigningSolution solution = scoreDirector.getWorkingSolution();
         Task toBeRemovedTask = null;
+
+        // A SolutionCloner clones planning entity lists (such as taskList), so no need to clone the processList here
         for (Task task : solution.getTaskList()) {
             if (task.getId().equals(taskId)) {
                 toBeRemovedTask = task;
@@ -51,14 +53,15 @@ public class DeleteTaskProblemFactChange extends AbstractPersistable implements 
             return;
         }
 
+        rerouteChain(scoreDirector, workingTask);
+
         scoreDirector.beforeEntityRemoved(workingTask);
-        updatePreviousTaskOrEmployee(scoreDirector, workingTask);
         solution.getTaskList().remove(workingTask);
         scoreDirector.afterEntityRemoved(workingTask);
         scoreDirector.triggerVariableListeners();
     }
 
-    private void updatePreviousTaskOrEmployee(ScoreDirector<TaskAssigningSolution> scoreDirector, Task workingTask) {
+    private void rerouteChain(ScoreDirector<TaskAssigningSolution> scoreDirector, Task workingTask) {
         Task nextTask = workingTask.getNextTask();
         if (nextTask != null) {
             scoreDirector.beforeVariableChanged(nextTask, "previousTaskOrEmployee");

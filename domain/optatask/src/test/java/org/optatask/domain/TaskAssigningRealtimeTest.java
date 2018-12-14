@@ -34,13 +34,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TaskAssigningRealtimeTest {
 
-    public static final String SOLVER_CONFIG = "org/optatask/solver/taskAssigningSolverConfig.xml";
-    public final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String SOLVER_CONFIG = "org/optatask/solver/taskAssigningSolverConfig.xml";
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Object stageLock = new Object();
+    private final Object stageLock = new Object();
     private AtomicInteger stageNumber = new AtomicInteger(0);
     private CountDownLatch stage1Latch = new CountDownLatch(1);
     private CountDownLatch stage2Latch = new CountDownLatch(1);
@@ -85,11 +86,11 @@ public class TaskAssigningRealtimeTest {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("SolverThread did not die yet due to an interruption.", e);
         }
-        assertEquals(true, solver.isEveryProblemFactChangeProcessed());
+        assertTrue(solver.isEveryProblemFactChangeProcessed());
     }
 
     private Solver<TaskAssigningSolution> buildSolver() {
-        SolverFactory<TaskAssigningSolution> solverFactory = SolverFactory.createFromXmlResource(
+        SolverFactory<TaskAssigningSolution> solverFactory = SolverFactory.createFromKieContainerXmlResource(
                 SOLVER_CONFIG);
         solverFactory.getSolverConfig().setTerminationConfig(new TerminationConfig().withBestScoreFeasible(true));
         return solverFactory.buildSolver();

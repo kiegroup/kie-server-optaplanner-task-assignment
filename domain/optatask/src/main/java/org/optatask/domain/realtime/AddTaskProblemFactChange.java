@@ -46,6 +46,7 @@ public class AddTaskProblemFactChange extends AbstractPersistable implements Pro
 
         long taskId = 0L;
         int taskIndexInTaskType = 0;
+        // A SolutionCloner clones planning entity lists (such as taskList), so no need to clone the processList here
         for (Task other : taskList) {
             if (taskId <= other.getId()) {
                 taskId = other.getId() + 1L;

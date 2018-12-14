@@ -26,8 +26,7 @@
   <daemon>true</daemon>
 
   <scoreDirectorFactory>
-    <!--<ksessionName>optataskKsession</ksessionName>-->
-    <scoreDrl>org/optatask/solver/taskAssigningScoreRules.drl</scoreDrl>
+    <ksessionName>optataskKsession</ksessionName>
   </scoreDirectorFactory>
 
   <!--<termination>-->
