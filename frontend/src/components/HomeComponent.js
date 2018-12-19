@@ -4,10 +4,10 @@ import {
   Form, FormGroup, TextInput, ActionGroup, Toolbar, ToolbarGroup, TextArea,
 } from '@patternfly/react-core';
 import JXON from 'jxon';
+import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
 
-import PROBLEM from '../shared/24tasks';
 import BEST_SOLUTION from '../shared/24tasksBestSolution';
 
 const BASE_URI = '/kie-server/services/rest/server';
@@ -28,7 +28,7 @@ class Home extends Component {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      problem: PROBLEM,
+      problem: props.problem,
       bestSolution: BEST_SOLUTION,
     };
 
@@ -397,5 +397,11 @@ class Home extends Component {
     );
   }
 }
+
+Home.propTypes = {
+  problem: PropTypes.shape({
+    TaTaskAssigningSolution: PropTypes.object.isRequired,
+  }).isRequired,
+};
 
 export default Home;
