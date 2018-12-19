@@ -34,6 +34,7 @@ class Main extends Component {
         <Switch>
           <Route path="/home" component={() => <Home problem={this.state.problem} />} />
           <Route
+            exact
             path="/tasks"
             component={() => (
               <TaskPage

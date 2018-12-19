@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Nav, NavList, NavItem, NavVariants,
 } from '@patternfly/react-core';
+import { NavLink } from 'react-router-dom';
 
 class Header extends Component {
   constructor(props) {
@@ -13,42 +14,43 @@ class Header extends Component {
     this.onSelect = this.onSelect.bind(this);
   }
 
-    onSelect = (result) => {
-      this.setState({
-        activeItem: result.itemId,
-      });
-    };
+  onSelect = (result) => {
+    this.setState({
+      activeItem: result.itemId,
+    });
+  };
 
-    render() {
-      return (
-        <div style={{ backgroundColor: '#292e34', padding: '1rem' }}>
-          <Nav onSelect={this.onSelect} aria-label="Primary Nav Horizontal">
-            <div className="container">
-              <NavList variant={NavVariants.horizontal}>
-                <NavItem to="/home" itemId={0} isActive={this.state.activeItem === 0}>
-                                Home
-                </NavItem>
-                <NavItem to="/skills" itemId={1} isActive={this.state.activeItem === 1}>
-                                Skills
-                </NavItem>
-                <NavItem to="/taskTypes" itemId={2} isActive={this.state.activeItem === 2}>
-                                Task types
-                </NavItem>
-                <NavItem to="/customers" itemId={3} isActive={this.state.activeItem === 3}>
-                                Customers
-                </NavItem>
-                <NavItem to="/employees" itemId={4} isActive={this.state.activeItem === 4}>
-                                Employees
-                </NavItem>
-                <NavItem to="/tasks" itemId={5} isActive={this.state.activeItem === 5}>
-                                Tasks
-                </NavItem>
-              </NavList>
-            </div>
-          </Nav>
-        </div>
-      );
-    }
+  render() {
+    const { activeItem } = this.state;
+    return (
+      <div style={{ backgroundColor: '#292e34', padding: '1rem' }}>
+        <Nav onSelect={this.onSelect} aria-label="Primary Nav Horizontal">
+          <div className="container">
+            <NavList variant={NavVariants.horizontal}>
+              <NavItem itemId={0} isActive={activeItem === 0}>
+                <NavLink className="nav-link" to="/home"> Home</NavLink>
+              </NavItem>
+              <NavItem itemId={1} isActive={activeItem === 1}>
+                <NavLink className="nav-link" to="/skills"> Skills</NavLink>
+              </NavItem>
+              <NavItem itemId={2} isActive={activeItem === 2}>
+                <NavLink className="nav-link" to="/taskTypes"> Task Types</NavLink>
+              </NavItem>
+              <NavItem to="/customers" itemId={3} isActive={activeItem === 3}>
+              <NavLink className="nav-link" to="/customers"> Customers</NavLink>
+              </NavItem>
+              <NavItem to="/employees" itemId={4} isActive={activeItem === 4}>
+              <NavLink className="nav-link" to="/employees"> Employees</NavLink>
+              </NavItem>
+              <NavItem itemId={5} isActive={activeItem === 5}>
+                <NavLink className="nav-link" to="/tasks"> Tasks</NavLink>
+              </NavItem>
+            </NavList>
+          </div>
+        </Nav>
+      </div>
+    );
+  }
 }
 
 export default Header;
