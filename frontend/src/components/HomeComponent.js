@@ -10,7 +10,7 @@ import Schedule from './ScheduleComponent';
 
 import BEST_SOLUTION from '../shared/24tasksBestSolution';
 
-const BASE_URI = '/kie-server/services/rest/server';
+import { BASE_URI } from '../shared/macros';
 
 class Home extends Component {
   constructor(props) {

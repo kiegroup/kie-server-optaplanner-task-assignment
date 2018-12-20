@@ -37,10 +37,10 @@ class Header extends Component {
                 <NavLink className="nav-link" to="/taskTypes"> Task Types</NavLink>
               </NavItem>
               <NavItem to="/customers" itemId={3} isActive={activeItem === 3}>
-              <NavLink className="nav-link" to="/customers"> Customers</NavLink>
+                <NavLink className="nav-link" to="/customers"> Customers</NavLink>
               </NavItem>
               <NavItem to="/employees" itemId={4} isActive={activeItem === 4}>
-              <NavLink className="nav-link" to="/employees"> Employees</NavLink>
+                <NavLink className="nav-link" to="/employees"> Employees</NavLink>
               </NavItem>
               <NavItem itemId={5} isActive={activeItem === 5}>
                 <NavLink className="nav-link" to="/tasks"> Tasks</NavLink>
