@@ -30,6 +30,7 @@ class TaskPage extends Component {
 
     this.handleAddTaskModalToggle = this.handleAddTaskModalToggle.bind(this);
     this.handleAddTask = this.handleAddTask.bind(this);
+    this.removeTask = this.removeTask.bind(this);
   }
 
   handleAddTaskModalToggle() {
@@ -55,6 +56,21 @@ class TaskPage extends Component {
       },
     };
 
+    this.submitProblemFactChange(body, `Task ${JSON.stringify(this.state.newTask)} added successfully`);
+  }
+
+  removeTask(taskId) {
+    const body = {
+      'problem-fact-change': {
+        $class: 'TaDeleteTaskProblemFactChange',
+        taskId,
+      },
+    };
+
+    this.submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`);
+  }
+
+  submitProblemFactChange(body, successMsg) {
     fetch(`${BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
       method: 'POST',
       credentials: 'include',
@@ -66,7 +82,7 @@ class TaskPage extends Component {
     })
       .then((response) => {
         if (response.ok) {
-          alert(`Task ${JSON.stringify(this.state.newTask)} added successfully`);
+          alert(successMsg);
           this.props.updateBestSolution();
           return;
         }
@@ -84,7 +100,7 @@ class TaskPage extends Component {
         <DataListCell />
         <DataListCell />
         <DataListCell>
-          <Button variant="danger">Remove</Button>
+          <Button variant="danger" onClick={() => this.removeTask(task.id)}>Remove</Button>
         </DataListCell>
       </DataListItem>
     ));
