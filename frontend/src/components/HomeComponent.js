@@ -8,8 +8,6 @@ import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
 
-import BEST_SOLUTION from '../shared/24tasksBestSolution';
-
 import { BASE_URI } from '../shared/macros';
 
 class Home extends Component {
@@ -29,14 +27,12 @@ class Home extends Component {
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
       problem: props.problem,
-      bestSolution: BEST_SOLUTION,
     };
 
     this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
     this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
     this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
     this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
-    this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
@@ -153,34 +149,6 @@ class Home extends Component {
       .catch(error => console.log(error));
   }
 
-  handleGetSolution(event) {
-    event.preventDefault();
-    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
-      .then(response => JXON.build(response))
-      .then((response) => {
-        if (Object.prototype.hasOwnProperty.call(response['solver-instance'], 'best-solution')) {
-          this.setState({ bestSolution: response['solver-instance']['best-solution'] });
-        } else {
-          alert('Solver is not solving');
-        }
-      })
-      .catch(error => console.log(error));
-  }
-
   render() {
     return (
       <div className="container">
@@ -211,113 +179,121 @@ class Home extends Component {
           onClose={this.handleDeploymentModalToggle}
         >
           <Form>
-            <FormGroup
-              label="Name"
-              isRequired
-              fieldId="containerId"
-            >
-              <TextInput
+            <fieldset>
+              <legend>Container</legend>
+              <FormGroup
+                label="Name"
                 isRequired
-                type="text"
-                id="containerId"
-                name="containerId"
-                value={this.state.container.containerId}
-                onChange={(containerId) => {
-                  this.setState(
-                    prevState => ({ container: { ...prevState.container, containerId } }),
-                  );
-                }}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Group Name"
-              isRequired
-              fieldId="groupId"
-              helperText="Please provide the group id"
-            >
-              <TextInput
+                fieldId="containerId"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="containerId"
+                  name="containerId"
+                  value={this.state.container.containerId}
+                  onChange={(containerId) => {
+                    this.setState(
+                      prevState => ({ container: { ...prevState.container, containerId } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+              <FormGroup
+                label="Group Name"
                 isRequired
-                type="text"
-                id="groupId"
-                name="groupId"
-                value={this.state.container.groupId}
-                onChange={(groupId) => {
-                  this.setState(
-                    prevState => ({ container: { ...prevState.container, groupId } }),
-                  );
-                }}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Artifact Id"
-              isRequired
-              fieldId="artifactId"
-            >
-              <TextInput
+                fieldId="groupId"
+                helperText="Please provide the group id"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="groupId"
+                  name="groupId"
+                  value={this.state.container.groupId}
+                  onChange={(groupId) => {
+                    this.setState(
+                      prevState => ({ container: { ...prevState.container, groupId } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+              <FormGroup
+                label="Artifact Id"
                 isRequired
-                type="text"
-                id="artifactId"
-                name="artifactId"
-                value={this.state.container.artifactId}
-                onChange={(artifactId) => {
-                  this.setState(
-                    prevState => ({ container: { ...prevState.container, artifactId } }),
-                  );
-                }}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Version"
-              isRequired
-              fieldId="version"
-            >
-              <TextInput
+                fieldId="artifactId"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="artifactId"
+                  name="artifactId"
+                  value={this.state.container.artifactId}
+                  onChange={(artifactId) => {
+                    this.setState(
+                      prevState => ({ container: { ...prevState.container, artifactId } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+              <FormGroup
+                label="Version"
                 isRequired
-                type="text"
-                id="version"
-                name="releaseId.version"
-                value={this.state.container.version}
-                onChange={(version) => {
-                  this.setState(
-                    prevState => ({ container: { ...prevState.container, version } }),
-                  );
-                }}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Solver Id"
-              isRequired
-              fieldId="solverId"
-            >
-              <TextInput
+                fieldId="version"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="version"
+                  name="releaseId.version"
+                  value={this.state.container.version}
+                  onChange={(version) => {
+                    this.setState(
+                      prevState => ({ container: { ...prevState.container, version } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+            </fieldset>
+
+            <fieldset>
+              <legend>Solver</legend>
+              <FormGroup
+                label="Solver Id"
                 isRequired
-                type="text"
-                id="solverId"
-                value={this.state.solver.id}
-                onChange={(solverId) => {
-                  this.setState(
-                    prevState => ({ solver: { ...prevState.solver, id: solverId } }),
-                  );
-                }}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Solver config file"
-              isRequired
-              fieldId="solverConfigFilePath"
-            >
-              <TextInput
+                fieldId="solverId"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="solverId"
+                  value={this.state.solver.id}
+                  onChange={(solverId) => {
+                    this.setState(
+                      prevState => ({ solver: { ...prevState.solver, id: solverId } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+              <FormGroup
+                label="Solver config file"
                 isRequired
-                type="text"
-                id="solverConfigFilePath"
-                value={this.state.solver.configFilePath}
-                onChange={(configFilePath) => {
-                  this.setState(
-                    prevState => ({ solver: { ...prevState.solver, configFilePath } }),
-                  );
-                }}
-              />
-            </FormGroup>
+                fieldId="solverConfigFilePath"
+              >
+                <TextInput
+                  isRequired
+                  type="text"
+                  id="solverConfigFilePath"
+                  value={this.state.solver.configFilePath}
+                  onChange={(configFilePath) => {
+                    this.setState(
+                      prevState => ({ solver: { ...prevState.solver, configFilePath } }),
+                    );
+                  }}
+                />
+              </FormGroup>
+            </fieldset>
+
             <ActionGroup>
               <Toolbar>
                 <ToolbarGroup>
@@ -345,7 +321,7 @@ class Home extends Component {
                 <div className="row">
                   <div className="col">
                     <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
-                    <Button onClick={this.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
+                    <Button onClick={this.props.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
                   </div>
                 </div>
               </CardBody>
@@ -386,11 +362,11 @@ class Home extends Component {
 
         <div className="row">
           <div className="col">
-            <Schedule bestSolution={this.state.bestSolution} />
+            <Schedule bestSolution={this.props.bestSolution} />
           </div>
           <div className="col">
             Score:&nbsp;
-            {this.state.bestSolution.score}
+            {this.props.bestSolution.score}
           </div>
         </div>
       </div>
@@ -402,6 +378,10 @@ Home.propTypes = {
   problem: PropTypes.shape({
     TaTaskAssigningSolution: PropTypes.object.isRequired,
   }).isRequired,
+  bestSolution: PropTypes.shape({
+    score: PropTypes.string.isRequired,
+  }).isRequired,
+  handleGetSolution: PropTypes.func.isRequired,
 };
 
 export default Home;

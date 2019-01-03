@@ -9,6 +9,10 @@ import JXON from 'jxon';
 
 import { BASE_URI } from '../shared/macros';
 
+/**
+ * Todo:
+ * - Find a way to display TaskType and Customer of a nextTask from BestSolution
+ */
 class TaskPage extends Component {
   constructor(props) {
     super(props);
@@ -63,6 +67,7 @@ class TaskPage extends Component {
       .then((response) => {
         if (response.ok) {
           alert(`Task ${JSON.stringify(this.state.newTask)} added successfully`);
+          this.props.updateBestSolution();
           return;
         }
         const error = new Error(`${response.status}: ${response.statusText}`);
@@ -79,7 +84,7 @@ class TaskPage extends Component {
         <DataListCell />
         <DataListCell />
         <DataListCell>
-          <Button onClick={() => this.removeTask(task.id)} variant="danger">Delete</Button>
+          <Button variant="danger">Remove</Button>
         </DataListCell>
       </DataListItem>
     ));
@@ -216,6 +221,7 @@ TaskPage.propTypes = {
   tasks: PropTypes.instanceOf(Array).isRequired,
   container: PropTypes.instanceOf(Object).isRequired,
   solver: PropTypes.instanceOf(Object).isRequired,
+  updateBestSolution: PropTypes.func.isRequired,
 };
 
 export default TaskPage;
