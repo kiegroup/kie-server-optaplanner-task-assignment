@@ -6,22 +6,13 @@ import Header from './HeaderComponent';
 import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
-import PROBLEM from '../shared/24tasks';
-import BEST_SOLUTION from '../shared/24tasksBestSolution';
 import { BASE_URI } from '../shared/macros';
 
-/*
-  TODO:
-  - Manage best solution here, and forwards it into HomeComponent and TaskPage
-  - Get taskList from best solution and keep problem in HomeComponent
-  - When the page first starts, getBestSolution if the solver is working
-*/
 class Main extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      problem: PROBLEM,
       container: {
         containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
         groupId: 'org.optatask',
@@ -32,7 +23,7 @@ class Main extends Component {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      bestSolution: BEST_SOLUTION,
+      bestSolution: {},
     };
 
     this.onContainerChagne = this.onContainerChagne.bind(this);
@@ -78,13 +69,15 @@ class Main extends Component {
 
   render() {
     const tasks = [];
-    this.state.bestSolution.employeeList.TaEmployee.forEach((employee) => {
-      let currentTask = employee.nextTask;
-      while (currentTask != null) {
-        tasks.push(currentTask);
-        currentTask = currentTask.nextTask;
-      }
-    });
+    if (Object.prototype.hasOwnProperty.call(this.state.bestSolution, 'employeeList')) {
+      this.state.bestSolution.employeeList.TaEmployee.forEach((employee) => {
+        let currentTask = employee.nextTask;
+        while (currentTask != null) {
+          tasks.push(currentTask);
+          currentTask = currentTask.nextTask;
+        }
+      });
+    }
     tasks.sort((t1, t2) => parseInt(t1.id, 10) > parseInt(t2.id, 10));
 
     return (
@@ -95,7 +88,6 @@ class Main extends Component {
             path="/home"
             component={() => (
               <Home
-                problem={this.state.problem}
                 container={this.state.container}
                 onContainerChagne={this.onContainerChagne}
                 bestSolution={this.state.bestSolution}
