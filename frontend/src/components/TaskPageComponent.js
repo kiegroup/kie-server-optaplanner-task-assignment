@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import JXON from 'jxon';
 
-import { BASE_URI } from '../shared/macros';
+import constants from '../shared/constants';
 
 /**
  * Todo:
@@ -71,7 +71,7 @@ class TaskPage extends Component {
   }
 
   submitProblemFactChange(body, successMsg) {
-    fetch(`${BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
+    fetch(`${constants.BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
       method: 'POST',
       credentials: 'include',
       headers: {

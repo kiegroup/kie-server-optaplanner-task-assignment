@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import Schedule from './ScheduleComponent';
 
 import PROBLEM from '../shared/24tasks';
-import { BASE_URI } from '../shared/macros';
+import constants from '../shared/constants';
 
 class Home extends Component {
   constructor(props) {
@@ -71,7 +71,7 @@ class Home extends Component {
     };
 
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${BASE_URI}/config`, {
+    fetch(`${constants.BASE_URI}/config`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -102,7 +102,7 @@ class Home extends Component {
       },
     };
     const bodyAsXML = JXON.unbuild(body);
-    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
+    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -129,7 +129,7 @@ class Home extends Component {
     event.preventDefault();
     this.handleAddProblemModalToggle();
 
-    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
+    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
       method: 'POST',
       credentials: 'include',
       headers: {

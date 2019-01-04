@@ -6,7 +6,8 @@ import Header from './HeaderComponent';
 import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
-import { BASE_URI } from '../shared/macros';
+import constants from '../shared/constants';
+// const { BASE_URI } = require('../shared/macros');
 
 class Main extends Component {
   constructor(props) {
@@ -36,7 +37,7 @@ class Main extends Component {
   }
 
   updateBestSolution() {
-    fetch(`${BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
+    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
       credentials: 'include',
       headers: {
         'X-KIE-ContentType': 'xstream',
