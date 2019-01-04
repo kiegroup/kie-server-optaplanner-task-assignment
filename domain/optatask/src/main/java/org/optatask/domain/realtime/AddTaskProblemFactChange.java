@@ -44,6 +44,17 @@ public class AddTaskProblemFactChange extends AbstractPersistable implements Pro
         TaskAssigningSolution solution = scoreDirector.getWorkingSolution();
         List<Task> taskList = solution.getTaskList();
 
+        for (TaskType taskType : solution.getTaskTypeList()) {
+            if (taskType.getId() == taskTypeId) {
+                task.setTaskType(taskType);
+            }
+        }
+        solution.getCustomerList().stream().forEach(customer -> {
+            if (customer.getId() == customerId) {
+                task.setCustomer(customer);
+            }
+        });
+
         long taskId = 0L;
         int taskIndexInTaskType = 0;
         // A SolutionCloner clones planning entity lists (such as taskList), so no need to clone the processList here
@@ -59,16 +70,6 @@ public class AddTaskProblemFactChange extends AbstractPersistable implements Pro
         }
         task.setId(taskId);
         task.setIndexInTaskType(taskIndexInTaskType);
-        for (TaskType taskType : solution.getTaskTypeList()) {
-            if (taskType.getId() == taskTypeId) {
-                task.setTaskType(taskType);
-            }
-        }
-        solution.getCustomerList().stream().forEach(customer -> {
-            if (customer.getId() == customerId) {
-                task.setCustomer(customer);
-            }
-        });
 
         scoreDirector.beforeEntityAdded(task);
         taskList.add(task);
