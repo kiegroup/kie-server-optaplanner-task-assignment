@@ -9,6 +9,7 @@ import moment from 'moment';
 const extractScheduler = (bestSolution) => {
   const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Day);
   schedulerData.localeMoment.locale('en');
+  schedulerData.config.schedulerWidth = 750;
   schedulerData.config.dayCellWidth = 100;
 
   const resources = [];
@@ -89,17 +90,13 @@ class Schedule extends Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="row">
-          <Scheduler
-            schedulerData={this.state.schedulerData}
-            prevClick={this.prevClick}
-            nextClick={this.nextClick}
-            onSelectDate={this.onSelectDate}
-            onViewChange={this.onViewChange}
-          />
-        </div>
-      </div>
+      <Scheduler
+        schedulerData={this.state.schedulerData}
+        prevClick={this.prevClick}
+        nextClick={this.nextClick}
+        onSelectDate={this.onSelectDate}
+        onViewChange={this.onViewChange}
+      />
     );
   }
 }

@@ -151,6 +151,15 @@ class Home extends Component {
   }
 
   render() {
+    let score;
+    if (this.props.score) {
+      score = (
+        <div className="col-12">
+          Score:&nbsp;
+          {this.props.score}
+        </div>
+      );
+    }
     return (
       <div className="container">
         <br />
@@ -341,7 +350,7 @@ class Home extends Component {
                   <TextArea
                     isRequired
                     id="problem"
-                    size="200"
+                    rows="20"
                     value={JXON.xmlToString(JXON.jsToXml(this.state.problem))}
                     onChange={(problem) => { this.setState({ problem }); }}
                   />
@@ -361,13 +370,10 @@ class Home extends Component {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col">
+        <div className="row text-center">
+          {score}
+          <div className="col-12">
             <Schedule bestSolution={this.props.bestSolution} />
-          </div>
-          <div className="col">
-            Score:&nbsp;
-            {this.props.score}
           </div>
         </div>
       </div>
