@@ -18,6 +18,7 @@ package org.optatask.domain;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
@@ -30,6 +31,7 @@ import org.optaplanner.persistence.xstream.api.score.buildin.bendable.BendableSc
 
 @PlanningSolution
 @XStreamAlias("TaTaskAssigningSolution")
+@JsonPropertyOrder({ "skillList", "taskTypeList", "customerList", "employeeList", "taskList", "score", "frozenCutoff" })
 public class TaskAssigningSolution extends AbstractPersistable {
 
     @ProblemFactCollectionProperty

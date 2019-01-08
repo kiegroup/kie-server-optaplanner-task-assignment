@@ -16,6 +16,7 @@
 
 package org.optatask.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.InverseRelationShadowVariable;
 
@@ -24,6 +25,8 @@ public abstract class TaskOrEmployee extends AbstractPersistable {
 
     // Shadow variables
     @InverseRelationShadowVariable(sourceVariableName = "previousTaskOrEmployee")
+    // Ignore this in the json result to keep Tasks details in taskList only
+    @JsonIgnore
     protected Task nextTask;
 
     public TaskOrEmployee() {

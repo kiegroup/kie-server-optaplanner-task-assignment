@@ -16,6 +16,7 @@
 
 package org.optatask.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.entity.PlanningPin;
@@ -42,6 +43,8 @@ public class Task extends TaskOrEmployee {
     // Planning variables: changes during planning, between score calculations.
     @PlanningVariable(valueRangeProviderRefs = {"employeeRange", "taskRange"},
             graphType = PlanningVariableGraphType.CHAINED)
+    // Ignore this in the json result to keep Tasks details in taskList only
+    @JsonIgnore
     private TaskOrEmployee previousTaskOrEmployee;
 
     // Shadow variables
@@ -193,6 +196,7 @@ public class Task extends TaskOrEmployee {
         return getCode() + ": " + taskType.getTitle();
     }
 
+    @JsonIgnore
     public String getToolText() {
         StringBuilder toolText = new StringBuilder();
         toolText.append("<html><center><b>").append(getLabel()).append("</b><br/>")
