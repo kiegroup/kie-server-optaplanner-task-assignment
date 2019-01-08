@@ -9,10 +9,6 @@ import JXON from 'jxon';
 
 import constants from '../shared/constants';
 
-/**
- * Todo:
- * - Find a way to display TaskType and Customer of a nextTask from BestSolution
- */
 class TaskPage extends Component {
   constructor(props) {
     super(props);
@@ -94,16 +90,21 @@ class TaskPage extends Component {
   }
 
   render() {
-    const taskList = this.state.tasks.map(task => (
-      <DataListItem key={task.id} aria-labelledby={`Task ${task.id}`}>
-        <DataListCell>{task.id}</DataListCell>
-        <DataListCell />
-        <DataListCell />
-        <DataListCell>
-          <Button variant="danger" onClick={() => this.removeTask(task.id)}>Remove</Button>
-        </DataListCell>
-      </DataListItem>
-    ));
+    const taskList = this.state.tasks.map((task) => {
+      const { id } = task;
+      const taskType = this.props.taskTypes.filter(type => type.id === task.taskType)[0].label;
+      const customer = this.props.customers.filter(c => c.id === task.customer)[0].label;
+      return (
+        <DataListItem key={task.id} aria-labelledby={`Task ${task.id}`}>
+          <DataListCell>{id}</DataListCell>
+          <DataListCell>{taskType}</DataListCell>
+          <DataListCell>{customer}</DataListCell>
+          <DataListCell>
+            <Button variant="danger" onClick={() => this.removeTask(id)}>Remove</Button>
+          </DataListCell>
+        </DataListItem>
+      );
+    });
 
     return (
       <div className="container">
@@ -235,6 +236,8 @@ class TaskPage extends Component {
 
 TaskPage.propTypes = {
   tasks: PropTypes.instanceOf(Array).isRequired,
+  taskTypes: PropTypes.instanceOf(Array).isRequired,
+  customers: PropTypes.instanceOf(Array).isRequired,
   container: PropTypes.instanceOf(Object).isRequired,
   solver: PropTypes.instanceOf(Object).isRequired,
   updateBestSolution: PropTypes.func.isRequired,

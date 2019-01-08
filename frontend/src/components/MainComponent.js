@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import JXON from 'jxon';
 
 import Header from './HeaderComponent';
 import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
 import constants from '../shared/constants';
-// const { BASE_URI } = require('../shared/macros');
 
 class Main extends Component {
   constructor(props) {
@@ -25,6 +23,7 @@ class Main extends Component {
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
       bestSolution: {},
+      score: '',
     };
 
     this.onContainerChagne = this.onContainerChagne.bind(this);
@@ -40,22 +39,23 @@ class Main extends Component {
     fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
       credentials: 'include',
       headers: {
-        'X-KIE-ContentType': 'xstream',
+        'X-KIE-ContentType': 'json',
       },
     })
       .then((response) => {
         if (response.ok) {
-          return response.text();
+          return response.json();
         }
         const error = new Error(`${response.status}: ${response.statusText}`);
         error.response = response;
         throw error;
       }, (error) => { throw new Error(error.message); })
-      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
-      .then(response => JXON.build(response))
       .then((response) => {
-        if (Object.prototype.hasOwnProperty.call(response['solver-instance'], 'best-solution')) {
-          this.setState({ bestSolution: response['solver-instance']['best-solution'] });
+        if (Object.prototype.hasOwnProperty.call(response, 'best-solution')) {
+          this.setState({ bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'] });
+          if (Object.prototype.hasOwnProperty.call(response, 'score')) {
+            this.setState({ score: response.score.value });
+          }
         } else {
           alert('Solver is not solving');
         }
@@ -69,17 +69,6 @@ class Main extends Component {
   }
 
   render() {
-    const tasks = [];
-    if (Object.prototype.hasOwnProperty.call(this.state.bestSolution, 'employeeList')) {
-      this.state.bestSolution.employeeList.TaEmployee.forEach((employee) => {
-        let currentTask = employee.nextTask;
-        while (currentTask != null) {
-          tasks.push(currentTask);
-          currentTask = currentTask.nextTask;
-        }
-      });
-    }
-    tasks.sort((t1, t2) => parseInt(t1.id, 10) > parseInt(t2.id, 10));
 
     return (
       <div>
@@ -92,6 +81,7 @@ class Main extends Component {
                 container={this.state.container}
                 onContainerChagne={this.onContainerChagne}
                 bestSolution={this.state.bestSolution}
+                score={this.state.score}
                 handleGetSolution={this.handleGetSolution}
               />
             )}
@@ -101,7 +91,11 @@ class Main extends Component {
             path="/tasks"
             component={() => (
               <TaskPage
-                tasks={tasks}
+                tasks={this.state.bestSolution.taskList ? this.state.bestSolution.taskList : []}
+                taskTypes={this.state.bestSolution.taskTypeList
+                  ? this.state.bestSolution.taskTypeList : []}
+                customers={this.state.bestSolution.customerList
+                  ? this.state.bestSolution.customerList : []}
                 container={this.state.container}
                 solver={this.state.solver}
                 updateBestSolution={this.updateBestSolution}

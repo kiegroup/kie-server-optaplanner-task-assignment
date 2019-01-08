@@ -367,7 +367,7 @@ class Home extends Component {
           </div>
           <div className="col">
             Score:&nbsp;
-            {this.props.bestSolution.score}
+            {this.props.score}
           </div>
         </div>
       </div>
@@ -378,6 +378,7 @@ class Home extends Component {
 Home.propTypes = {
   bestSolution: PropTypes.instanceOf(Object).isRequired,
   handleGetSolution: PropTypes.func.isRequired,
+  score: PropTypes.string.isRequired,
 };
 
 export default Home;
