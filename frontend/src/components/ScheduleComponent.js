@@ -14,30 +14,32 @@ const extractScheduler = (bestSolution) => {
   const resources = [];
   const events = [];
 
-  bestSolution.employeeList.TaEmployee.forEach((employee) => {
-    const resource = {
-      id: employee.id,
-      name: employee.fullName,
-    };
-    resources.push(resource);
-
-    let currentTask = employee.nextTask;
-    while (currentTask != null) {
-      const start = new Date(2018, 0);
-      const end = new Date(2018, 0);
-      start.setMinutes(currentTask.startTime == null ? 0 : currentTask.startTime);
-      end.setMinutes(currentTask.endTime == null ? 10 : currentTask.endTime);
-      const event = {
-        id: currentTask.id,
-        start: moment(start).format(DATETIME_FORMAT),
-        end: moment(end).format(DATETIME_FORMAT),
-        resourceId: employee.id,
-        title: `Task-${currentTask.id}`,
+  if (Object.prototype.hasOwnProperty.call(bestSolution, 'employeeList')) {
+    bestSolution.employeeList.TaEmployee.forEach((employee) => {
+      const resource = {
+        id: employee.id,
+        name: employee.fullName,
       };
-      events.push(event);
-      currentTask = currentTask.nextTask;
-    }
-  });
+      resources.push(resource);
+
+      let currentTask = employee.nextTask;
+      while (currentTask != null) {
+        const start = new Date(2018, 0);
+        const end = new Date(2018, 0);
+        start.setMinutes(currentTask.startTime == null ? 0 : currentTask.startTime);
+        end.setMinutes(currentTask.endTime == null ? 10 : currentTask.endTime);
+        const event = {
+          id: currentTask.id,
+          start: moment(start).format(DATETIME_FORMAT),
+          end: moment(end).format(DATETIME_FORMAT),
+          resourceId: employee.id,
+          title: `Task-${currentTask.id}`,
+        };
+        events.push(event);
+        currentTask = currentTask.nextTask;
+      }
+    });
+  }
 
   events.sort((e1, e2) => e1.start.localeCompare(e2));
   schedulerData.setResources(resources);
@@ -105,9 +107,7 @@ class Schedule extends Component {
 }
 
 Schedule.propTypes = {
-  bestSolution: PropTypes.shape({
-    employeeList: PropTypes.object.isRequired,
-  }).isRequired,
+  bestSolution: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default Schedule;
