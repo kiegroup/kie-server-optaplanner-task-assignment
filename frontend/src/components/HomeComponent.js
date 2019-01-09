@@ -52,33 +52,30 @@ class Home extends Component {
     event.preventDefault();
     this.handleDeploymentModalToggle();
     const body = {
-      script: {
-        commands: [
-          {
-            'create-container': {
-              'kie-container': {
-                'container-id': this.state.container.containerId,
-                'release-id': {
-                  'group-id': this.state.container.groupId,
-                  'artifact-id': this.state.container.artifactId,
-                  version: this.state.container.version,
-                },
+      commands: [
+        {
+          'create-container': {
+            container: {
+              'container-id': this.state.container.containerId,
+              'release-id': {
+                'group-id': this.state.container.groupId,
+                'artifact-id': this.state.container.artifactId,
+                version: this.state.container.version,
               },
             },
           },
-        ],
-      },
+        },
+      ],
     };
 
-    const bodyAsXML = JXON.unbuild(body);
     fetch(`${constants.BASE_URI}/config`, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
+        'X-KIE-ContentType': 'json',
+        'Content-Type': 'application/json',
       },
-      body: (new XMLSerializer()).serializeToString(bodyAsXML, 'text/xml'),
+      body: JSON.stringify(body),
     })
       .then((response) => {
         if (response.ok) {
@@ -88,28 +85,23 @@ class Home extends Component {
         error.response = response;
         throw error;
       }, (error) => { throw new Error(error.message); })
-      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
-      .then(response => JXON.build(response))
-      .then(response => alert(JSON.stringify(response.responses.response)))
+      .then(response => alert(response))
       .then(() => this.addSolver())
       .catch(error => console.log(error));
   }
 
   addSolver() {
     const body = {
-      'solver-instance': {
-        'solver-config-file': this.state.solver.configFilePath,
-      },
+      'solver-config-file': this.state.solver.configFilePath,
     };
-    const bodyAsXML = JXON.unbuild(body);
     fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
+        'X-KIE-ContentType': 'json',
+        'Content-Type': 'application/json',
       },
-      body: (new XMLSerializer()).serializeToString(bodyAsXML, 'text/xml'),
+      body: JSON.stringify(body),
     })
       .then((response) => {
         if (response.ok) {
@@ -119,9 +111,7 @@ class Home extends Component {
         error.response = response;
         throw error;
       }, (error) => { throw new Error(error.message); })
-      .then(response => (new DOMParser()).parseFromString(response, 'text/xml'))
-      .then(response => JXON.build(response))
-      .then(response => alert(JSON.stringify(response)))
+      .then(response => alert(response))
       .catch(error => console.log(error));
   }
 
