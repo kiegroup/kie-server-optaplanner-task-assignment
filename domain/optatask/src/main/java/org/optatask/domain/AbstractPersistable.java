@@ -18,11 +18,17 @@ package org.optatask.domain;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.score.constraint.ConstraintMatch;
 
-public abstract class AbstractPersistable implements Serializable, Comparable<AbstractPersistable> {
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+public abstract class AbstractPersistable implements Serializable,
+                                                     Comparable<AbstractPersistable> {
 
     protected Long id;
 
@@ -85,5 +91,4 @@ public abstract class AbstractPersistable implements Serializable, Comparable<Ab
     public String toString() {
         return getClass().getName().replaceAll(".*\\.", "") + "-" + id;
     }
-
 }

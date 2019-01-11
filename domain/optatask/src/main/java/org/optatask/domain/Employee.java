@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("TaEmployee")
@@ -95,6 +96,7 @@ public class Employee extends TaskOrEmployee {
         return fullName;
     }
 
+    @JsonIgnore
     public String getToolText() {
         StringBuilder toolText = new StringBuilder();
         toolText.append("<html><center><b>").append(fullName).append("</b><br/><br/>");
