@@ -90,7 +90,6 @@ class TaskPage extends Component {
   }
 
   render() {
-    console.log(this.state.newTask);
     const taskList = this.state.tasks.map((task) => {
       const { id } = task;
       const taskType = this.props.taskTypes.filter(type => type.id === task.taskType)[0].label;
@@ -107,12 +106,20 @@ class TaskPage extends Component {
       );
     });
 
-    const taskTypeOptions = this.props.taskTypes.map((taskType) => 
-      <SelectOption key={taskType.id.toString()} value={taskType.id} label={taskType.title} />
-    );
-    const customerOptions = this.props.customers.map(customer =>
-      <SelectOption key={customer.id.toString()} value={customer.id} label={customer.name} />
-    );
+    const taskTypeOptions = this.props.taskTypes.map(taskType => (
+      <SelectOption
+        key={taskType.id.toString()}
+        value={taskType.id}
+        label={taskType.title}
+      />
+    ));
+    const customerOptions = this.props.customers.map(customer => (
+      <SelectOption
+        key={customer.id.toString()}
+        value={customer.id}
+        label={customer.name}
+      />
+    ));
 
     return (
       <div className="container">

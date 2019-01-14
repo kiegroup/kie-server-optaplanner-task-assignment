@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
 
-import PROBLEM from '../shared/24tasks';
+import PROBLEM from '../shared/simpleProblem';
 import constants from '../shared/constants';
 
 class Home extends Component {
