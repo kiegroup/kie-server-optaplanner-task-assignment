@@ -11,6 +11,7 @@ const extractScheduler = (bestSolution) => {
   schedulerData.localeMoment.locale('en');
   schedulerData.config.schedulerWidth = 750;
   schedulerData.config.dayCellWidth = 100;
+  schedulerData.behaviors.isNonWorkingTimeFunc = () => false;
 
   const resources = [];
   const events = [];
