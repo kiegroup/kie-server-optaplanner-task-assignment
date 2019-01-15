@@ -9,6 +9,7 @@
         "react/destructuring-assignment": "off",
         "no-console": "off",
         "no-alert": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "no-bitwise": "off"
     }
 }
