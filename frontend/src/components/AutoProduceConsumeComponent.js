@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { FormGroup, TextInput, Switch } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
+import JXON from 'jxon';
 
 import constants from '../shared/constants';
 
+// TODO: fix re-rendering bug when props are updated
 class AutoProduceConsume extends Component {
   constructor(props) {
     super(props);
@@ -32,11 +34,47 @@ class AutoProduceConsume extends Component {
 
   handleProduceRateChange = produceRate => this.setState({ produceRate });
 
+  pinTask = (taskId) => {
+    const body = {
+      'problem-fact-change': {
+        $class: 'TaPinTaskProblemFactChange',
+        taskId,
+      },
+    };
+
+    fetch(`${constants.BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'X-KIE-ContentType': 'xstream',
+        'Content-Type': 'application/xml',
+      },
+      body: JXON.xmlToString(JXON.jsToXml(body)),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log(`Pinned task ${taskId} successfully.`);
+          this.props.updateBestSolution();
+          return;
+        }
+        const error = new Error(`${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }, (error) => { throw new Error(error.message); })
+      .catch(error => console.log(error));
+  };
+
   count = () => {
     if (this.state.isCheckedConsume) {
       this.setState(
         prevState => ({ time: prevState.time + (constants.MINUTE_STEP * prevState.consumeRate) }),
-        // TODO: if this.state.isCheckedConsume, pin all tasks with startTime < this.state.time
+        () => {
+          this.props.tasks.forEach((task) => {
+            if (task.startTime < this.state.time && !task.pinned) {
+              this.pinTask(task.id);
+            }
+          });
+        },
       );
     }
 
@@ -106,7 +144,6 @@ class AutoProduceConsume extends Component {
               </div>
             </FormGroup>
           </div>
-
         </div>
       </div>
 
@@ -116,6 +153,9 @@ class AutoProduceConsume extends Component {
 
 AutoProduceConsume.propTypes = {
   tasks: PropTypes.instanceOf(Array).isRequired,
+  updateBestSolution: PropTypes.func.isRequired,
+  container: PropTypes.instanceOf(Object).isRequired,
+  solver: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default AutoProduceConsume;

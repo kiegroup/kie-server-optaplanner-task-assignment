@@ -20,12 +20,7 @@ class Home extends Component {
     this.state = {
       isDeploymentModalOpen: false,
       isAddProblemModalOpen: false,
-      container: {
-        containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
-        groupId: 'org.optatask',
-        artifactId: 'optatask',
-        version: '1.0-SNAPSHOT',
-      },
+      container: this.props.container,
       solver: {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
@@ -38,6 +33,7 @@ class Home extends Component {
     this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
     this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
     this.handleDeleteContainer = this.handleDeleteContainer.bind(this);
+    this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
@@ -165,6 +161,11 @@ class Home extends Component {
       }, (error) => { throw new Error(error.message); })
       .then(response => alert(JSON.stringify(response.msg)))
       .catch(error => console.log(error));
+  }
+
+  handleGetSolution(event) {
+    event.preventDefault();
+    this.props.updateBestSolution();
   }
 
   render() {
@@ -346,7 +347,7 @@ class Home extends Component {
                 <div className="row">
                   <div className="col">
                     <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
-                    <Button onClick={this.props.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
+                    <Button onClick={this.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
                   </div>
                 </div>
               </CardBody>
@@ -389,6 +390,9 @@ class Home extends Component {
           <div className="col-12">
             <AutoProduceConsume
               tasks={this.props.bestSolution.taskList ? this.props.bestSolution.taskList : []}
+              updateBestSolution={this.props.updateBestSolution}
+              container={this.props.container}
+              solver={this.props.solver}
             />
           </div>
         </div>
@@ -413,11 +417,13 @@ class Home extends Component {
 
 Home.propTypes = {
   bestSolution: PropTypes.instanceOf(Object).isRequired,
-  handleGetSolution: PropTypes.func.isRequired,
   score: PropTypes.string.isRequired,
   onContainerDeployed: PropTypes.func.isRequired,
   onContainerDeleted: PropTypes.func.isRequired,
   isContainerDeployed: PropTypes.bool.isRequired,
+  updateBestSolution: PropTypes.func.isRequired,
+  container: PropTypes.instanceOf(Object).isRequired,
+  solver: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default Home;

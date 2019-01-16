@@ -88,12 +88,13 @@ class Main extends Component {
             component={() => (
               <Home
                 container={this.state.container}
+                solver={this.state.solver}
                 onContainerDeployed={this.onContainerDeployed}
                 onContainerDeleted={this.onContainerDeleted}
                 isContainerDeployed={this.state.isContainerDeployed}
                 bestSolution={this.state.bestSolution}
                 score={this.state.score}
-                handleGetSolution={this.handleGetSolution}
+                updateBestSolution={this.updateBestSolution}
               />
             )}
           />
