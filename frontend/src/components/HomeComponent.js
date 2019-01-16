@@ -7,8 +7,11 @@ import JXON from 'jxon';
 import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
+import AutoProduceConsume from './AutoProduceConsumeComponent';
 
 import PROBLEM from '../shared/24tasks';
+// import PROBLEM from '../shared/simpleProblem';
+
 import constants from '../shared/constants';
 
 class Home extends Component {
@@ -382,17 +385,27 @@ class Home extends Component {
           </div>
         </div>
 
-        <div className="row text-center">
-          {this.props.score && (
-            <div className="col-12">
-              Score:&nbsp;
-              {this.props.score}
-            </div>
-          )}
+        <div className="row mb-4">
           <div className="col-12">
-            <Schedule bestSolution={this.props.bestSolution} />
+            <AutoProduceConsume
+              tasks={this.props.bestSolution.taskList ? this.props.bestSolution.taskList : []}
+            />
           </div>
         </div>
+
+        <Card>
+          <CardHeader className="text-center">
+            {this.props.score && (
+              <div className="col-12">
+                Score:&nbsp;
+                {this.props.score}
+              </div>
+            )}
+          </CardHeader>
+          <CardBody>
+            <Schedule bestSolution={this.props.bestSolution} />
+          </CardBody>
+        </Card>
       </div>
     );
   }

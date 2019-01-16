@@ -6,6 +6,8 @@ import Scheduler, {
 import 'react-big-scheduler/lib/css/style.css';
 import moment from 'moment';
 
+import constants from '../shared/constants';
+
 // idToColor from "Joe Freeman" answer: https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
 const idToColor = (str) => {
   let hash = 0;
@@ -26,6 +28,7 @@ const extractScheduler = (bestSolution) => {
   schedulerData.config.schedulerWidth = 750;
   schedulerData.config.dayCellWidth = 100;
   schedulerData.behaviors.isNonWorkingTimeFunc = () => false;
+  schedulerData.setMinuteStep(constants.MINUTE_STEP);
 
   const resources = [];
   const events = [];
@@ -50,7 +53,7 @@ const extractScheduler = (bestSolution) => {
         end: moment(end).format(DATETIME_FORMAT),
         resourceId: task.employee,
         title: task.label,
-        bgColor: idToColor((task.taskType << 10).toString()),
+        bgColor: task.pinned ? '#bfbfbf' : idToColor((task.taskType << 10).toString()),
       };
       events.push(event);
     });
