@@ -27,7 +27,7 @@ class Home extends Component {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      problem: PROBLEM,
+      problem: JXON.xmlToString(JXON.jsToXml(PROBLEM)),
     };
 
     this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
@@ -128,7 +128,7 @@ class Home extends Component {
         'X-KIE-ContentType': 'xstream',
         'Content-Type': 'application/xml',
       },
-      body: JXON.xmlToString(JXON.jsToXml(this.state.problem)),
+      body: this.state.problem,
     })
       .then((response) => {
         if (response.ok) {
@@ -363,7 +363,7 @@ class Home extends Component {
                     isRequired
                     id="problem"
                     rows="20"
-                    value={JXON.xmlToString(JXON.jsToXml(this.state.problem))}
+                    value={this.state.problem}
                     onChange={(problem) => { this.setState({ problem }); }}
                   />
                 </FormGroup>
