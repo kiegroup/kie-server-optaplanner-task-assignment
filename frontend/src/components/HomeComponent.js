@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
 
-import PROBLEM from '../shared/simpleProblem';
+import PROBLEM from '../shared/24tasks';
 import constants from '../shared/constants';
 
 class Home extends Component {
@@ -34,6 +34,7 @@ class Home extends Component {
     this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
     this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
     this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
+    this.handleDeleteContainer = this.handleDeleteContainer.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
@@ -79,6 +80,7 @@ class Home extends Component {
     })
       .then((response) => {
         if (response.ok) {
+          this.props.onContainerDeployed(this.state.container);
           return response.text();
         }
         const error = new Error(`${response.status}: ${response.statusText}`);
@@ -140,16 +142,29 @@ class Home extends Component {
       .catch(error => console.log(error));
   }
 
+  handleDeleteContainer(event) {
+    event.preventDefault();
+    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        'X-KIE-ContentType': 'json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          this.props.onContainerDeleted();
+          return response.json();
+        }
+        const error = new Error(`${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }, (error) => { throw new Error(error.message); })
+      .then(response => alert(JSON.stringify(response.msg)))
+      .catch(error => console.log(error));
+  }
+
   render() {
-    let score;
-    if (this.props.score) {
-      score = (
-        <div className="col-12">
-          Score:&nbsp;
-          {this.props.score}
-        </div>
-      );
-    }
     return (
       <div className="container">
         <br />
@@ -164,11 +179,18 @@ class Home extends Component {
                   </div>
                 </div>
                 <br />
-                <div className="row">
+                <div className="row mb-1">
                   <div className="col">
                     <Button onClick={this.handleDeploymentModalToggle} variant="primary">Add a container</Button>
                   </div>
                 </div>
+                {this.props.isContainerDeployed && (
+                  <div className="row">
+                    <div className="col">
+                      <Button onClick={this.handleDeleteContainer} variant="danger">Delete existing container</Button>
+                    </div>
+                  </div>
+                )}
               </CardBody>
             </Card>
           </div>
@@ -361,7 +383,12 @@ class Home extends Component {
         </div>
 
         <div className="row text-center">
-          {score}
+          {this.props.score && (
+            <div className="col-12">
+              Score:&nbsp;
+              {this.props.score}
+            </div>
+          )}
           <div className="col-12">
             <Schedule bestSolution={this.props.bestSolution} />
           </div>
@@ -375,6 +402,9 @@ Home.propTypes = {
   bestSolution: PropTypes.instanceOf(Object).isRequired,
   handleGetSolution: PropTypes.func.isRequired,
   score: PropTypes.string.isRequired,
+  onContainerDeployed: PropTypes.func.isRequired,
+  onContainerDeleted: PropTypes.func.isRequired,
+  isContainerDeployed: PropTypes.bool.isRequired,
 };
 
 export default Home;

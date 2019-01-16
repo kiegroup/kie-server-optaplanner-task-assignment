@@ -18,6 +18,7 @@ class Main extends Component {
         artifactId: 'optatask',
         version: '1.0-SNAPSHOT',
       },
+      isContainerDeployed: false,
       solver: {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
@@ -26,13 +27,19 @@ class Main extends Component {
       score: '',
     };
 
-    this.onContainerChagne = this.onContainerChagne.bind(this);
+    this.onContainerDeployed = this.onContainerDeployed.bind(this);
+    this.onContainerDeleted = this.onContainerDeleted.bind(this);
     this.handleGetSolution = this.handleGetSolution.bind(this);
     this.updateBestSolution = this.updateBestSolution.bind(this);
   }
 
-  onContainerChagne(container) {
-    this.setState({ container });
+  onContainerDeployed(container) {
+    this.setState({ container, isContainerDeployed: true });
+  }
+  
+  onContainerDeleted() {
+    this.setState({ isContainerDeployed: false, bestSolution: {} });
+    
   }
 
   updateBestSolution() {
@@ -56,8 +63,6 @@ class Main extends Component {
           if (Object.prototype.hasOwnProperty.call(response, 'score')) {
             this.setState({ score: response.score.value });
           }
-        } else {
-          alert('Solver is not solving');
         }
       })
       .catch(error => console.log(error));
@@ -78,7 +83,9 @@ class Main extends Component {
             component={() => (
               <Home
                 container={this.state.container}
-                onContainerChagne={this.onContainerChagne}
+                onContainerDeployed={this.onContainerDeployed}
+                onContainerDeleted={this.onContainerDeleted}
+                isContainerDeployed={this.state.isContainerDeployed}
                 bestSolution={this.state.bestSolution}
                 score={this.state.score}
                 handleGetSolution={this.handleGetSolution}
