@@ -33,13 +33,16 @@ class Main extends Component {
     this.updateBestSolution = this.updateBestSolution.bind(this);
   }
 
+  componentDidMount() {
+    this.updateBestSolution();
+  }
+
   onContainerDeployed(container) {
     this.setState({ container, isContainerDeployed: true });
   }
-  
+
   onContainerDeleted() {
     this.setState({ isContainerDeployed: false, bestSolution: {} });
-    
   }
 
   updateBestSolution() {
@@ -58,11 +61,13 @@ class Main extends Component {
         throw error;
       }, (error) => { throw new Error(error.message); })
       .then((response) => {
-        if (Object.prototype.hasOwnProperty.call(response, 'best-solution')) {
-          this.setState({ bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'] });
-          if (Object.prototype.hasOwnProperty.call(response, 'score')) {
-            this.setState({ score: response.score.value });
-          }
+        if (Object.prototype.hasOwnProperty.call(response, 'best-solution')
+          && Object.prototype.hasOwnProperty.call(response, 'score')) {
+          this.setState({
+            bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'],
+            score: response.score.value,
+            isContainerDeployed: true,
+          });
         }
       })
       .catch(error => console.log(error));
