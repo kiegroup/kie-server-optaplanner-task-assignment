@@ -3,9 +3,10 @@ import {
   FormGroup, TextInput, Switch, Button,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import JXON from 'jxon';
 
-import constants from '../shared/constants';
+import constants, { submitProblemFactChange } from '../shared/constants';
+
+const PRIORITIES = ['MINOR', 'MAJOR', 'CRITICAL'];
 
 class AutoProduceConsume extends Component {
   constructor(props) {
@@ -42,28 +43,41 @@ class AutoProduceConsume extends Component {
         taskId,
       },
     };
+    const successMsg = `Pinned task ${taskId} successfully.`;
 
-    fetch(`${constants.BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
-      },
-      body: JXON.xmlToString(JXON.jsToXml(body)),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log(`Pinned task ${taskId} successfully.`);
-          this.props.updateBestSolution();
-          return;
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(error));
+    submitProblemFactChange(
+      body, successMsg, this.props.container.containerId, this.props.solver.id,
+    );
+    this.props.updateBestSolution();
   };
+
+  addRandomTask = () => {
+    const readyTime = this.state.time;
+    const priority = PRIORITIES[Math.floor(Math.random() * 3)];
+    const taskTypeId = this.props.taskTypes[
+      Math.floor(Math.random() * (this.props.taskTypes.length))
+    ].id;
+    const customerId = this.props.customers[
+      Math.floor(Math.random() * (this.props.customers.length))
+    ].id;
+    const body = {
+      'problem-fact-change': {
+        $class: 'TaAddTaskProblemFactChange',
+        task: {
+          readyTime,
+          priority,
+          pinned: false,
+        },
+        taskTypeId,
+        customerId,
+      },
+    };
+    const successMsg = `Added task ${JSON.stringify(body['problem-fact-change'])}`;
+    submitProblemFactChange(
+      body, successMsg, this.props.container.containerId, this.props.solver.id,
+    );
+    this.props.updateBestSolution();
+  }
 
   count = () => {
     if (this.state.isCheckedConsume) {
@@ -75,11 +89,16 @@ class AutoProduceConsume extends Component {
               this.pinTask(task.id);
             }
           });
+          // TODO: block until everyProblemFactChange is processed then updateBestSolution.
         },
       );
     }
 
-    // TODO: If this.state.isCheckedProduce, produce this.state.produceRate tasks
+    if (this.state.isCheckedProduce) {
+      for (let i = 0; i < this.state.produceRate; i += 1) {
+        this.addRandomTask();
+      }
+    }
   }
 
   handleResetTimer = (event) => {
@@ -160,6 +179,8 @@ class AutoProduceConsume extends Component {
 
 AutoProduceConsume.propTypes = {
   tasks: PropTypes.instanceOf(Array).isRequired,
+  taskTypes: PropTypes.instanceOf(Array).isRequired,
+  customers: PropTypes.instanceOf(Array).isRequired,
   updateBestSolution: PropTypes.func.isRequired,
   container: PropTypes.instanceOf(Object).isRequired,
   solver: PropTypes.instanceOf(Object).isRequired,

@@ -390,6 +390,10 @@ class Home extends Component {
           <div className="col-12">
             <AutoProduceConsume
               tasks={this.props.bestSolution.taskList ? this.props.bestSolution.taskList : []}
+              taskTypes={this.props.bestSolution.taskTypeList
+                ? this.props.bestSolution.taskTypeList : []}
+              customers={this.props.bestSolution.customerList
+                ? this.props.bestSolution.customerList : []}
               updateBestSolution={this.props.updateBestSolution}
               container={this.props.container}
               solver={this.props.solver}
