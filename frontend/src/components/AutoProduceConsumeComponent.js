@@ -48,7 +48,6 @@ class AutoProduceConsume extends Component {
     submitProblemFactChange(
       body, successMsg, this.props.container.containerId, this.props.solver.id,
     );
-    this.props.updateBestSolution();
   };
 
   addRandomTask = () => {
@@ -76,7 +75,6 @@ class AutoProduceConsume extends Component {
     submitProblemFactChange(
       body, successMsg, this.props.container.containerId, this.props.solver.id,
     );
-    this.props.updateBestSolution();
   }
 
   count = () => {
@@ -85,7 +83,7 @@ class AutoProduceConsume extends Component {
         prevState => ({ time: prevState.time + (constants.MINUTE_STEP * prevState.consumeRate) }),
         () => {
           this.props.tasks.forEach((task) => {
-            if (task.startTime < this.state.time && !task.pinned) {
+            if (task.startTime < this.state.time && !task.pinned && task.employee != null) {
               this.pinTask(task.id);
             }
           });
@@ -98,6 +96,10 @@ class AutoProduceConsume extends Component {
       for (let i = 0; i < this.state.produceRate; i += 1) {
         this.addRandomTask();
       }
+    }
+
+    if (this.state.isCheckedConsume || this.state.isCheckedProduce) {
+      this.props.updateBestSolution();
     }
   }
 
@@ -131,6 +133,7 @@ class AutoProduceConsume extends Component {
                     label={this.state.isCheckedConsume ? 'On' : 'Off'}
                     isChecked={this.state.isCheckedConsume}
                     onChange={this.handleConsumeSwitchChange}
+                    isDisabled={this.props.tasks.length < 1}
                   />
                 </div>
               </div>
@@ -166,6 +169,7 @@ class AutoProduceConsume extends Component {
                     label={this.state.isCheckedProduce ? 'On' : 'Off'}
                     isChecked={this.state.isCheckedProduce}
                     onChange={this.handleProduceSwitchChange}
+                    isDisabled={this.props.taskTypes.length < 1 || this.props.customers.length < 1}
                   />
                 </div>
               </div>
