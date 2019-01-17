@@ -5,7 +5,6 @@ import JXON from 'jxon';
 
 import constants from '../shared/constants';
 
-// TODO: fix re-rendering bug when props are updated
 class AutoProduceConsume extends Component {
   constructor(props) {
     super(props);

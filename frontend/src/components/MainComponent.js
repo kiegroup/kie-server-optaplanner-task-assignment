@@ -85,34 +85,40 @@ class Main extends Component {
         <Switch>
           <Route
             path="/home"
-            component={() => (
-              <Home
-                container={this.state.container}
-                solver={this.state.solver}
-                onContainerDeployed={this.onContainerDeployed}
-                onContainerDeleted={this.onContainerDeleted}
-                isContainerDeployed={this.state.isContainerDeployed}
-                bestSolution={this.state.bestSolution}
-                score={this.state.score}
-                updateBestSolution={this.updateBestSolution}
-              />
-            )}
+            render={(props) => {
+              return (
+                <Home
+                  {...props}
+                  container={this.state.container}
+                  solver={this.state.solver}
+                  onContainerDeployed={this.onContainerDeployed}
+                  onContainerDeleted={this.onContainerDeleted}
+                  isContainerDeployed={this.state.isContainerDeployed}
+                  bestSolution={this.state.bestSolution}
+                  score={this.state.score}
+                  updateBestSolution={this.updateBestSolution}
+                />
+              );
+            }}
           />
           <Route
             exact
             path="/tasks"
-            component={() => (
-              <TaskPage
-                tasks={this.state.bestSolution.taskList ? this.state.bestSolution.taskList : []}
-                taskTypes={this.state.bestSolution.taskTypeList
-                  ? this.state.bestSolution.taskTypeList : []}
-                customers={this.state.bestSolution.customerList
-                  ? this.state.bestSolution.customerList : []}
-                container={this.state.container}
-                solver={this.state.solver}
-                updateBestSolution={this.updateBestSolution}
-              />
-            )}
+            render={(props) => {
+              return (
+                <TaskPage
+                  {...props}
+                  tasks={this.state.bestSolution.taskList ? this.state.bestSolution.taskList : []}
+                  taskTypes={this.state.bestSolution.taskTypeList
+                    ? this.state.bestSolution.taskTypeList : []}
+                  customers={this.state.bestSolution.customerList
+                    ? this.state.bestSolution.customerList : []}
+                  container={this.state.container}
+                  solver={this.state.solver}
+                  updateBestSolution={this.updateBestSolution}
+                />
+              )
+            }}
           />
           <Redirect to="/home" />
         </Switch>
