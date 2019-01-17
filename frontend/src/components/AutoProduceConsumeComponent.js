@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { FormGroup, TextInput, Switch } from '@patternfly/react-core';
+import {
+  FormGroup, TextInput, Switch, Button,
+} from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import JXON from 'jxon';
 
 import constants from '../shared/constants';
-import { Button } from 'antd/lib/radio';
 
 class AutoProduceConsume extends Component {
   constructor(props) {
