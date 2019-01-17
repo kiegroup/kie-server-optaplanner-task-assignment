@@ -41,17 +41,23 @@ const extractScheduler = (bestSolution) => {
       };
       resources.push(resource);
     });
+    resources.push({
+      id: constants.UNASSIGNED_ID,
+      name: 'Unassigned',
+    });
+
     bestSolution.taskList.forEach((task) => {
       const start = new Date(2018, 0);
       const end = new Date(2018, 0);
-      start.setMinutes(task.startTime == null ? 0 : task.startTime);
-      end.setMinutes(task.endTime == null ? 10 : task.endTime);
+      start.setMinutes(task.startTime == null || task.employee == null ? 0 : task.startTime);
+      end.setMinutes(task.endTime == null || task.employee == null
+        ? constants.MINUTE_STEP : task.endTime);
 
       const event = {
         id: task.id,
         start: moment(start).format(DATETIME_FORMAT),
         end: moment(end).format(DATETIME_FORMAT),
-        resourceId: task.employee,
+        resourceId: task.employee == null ? constants.UNASSIGNED_ID : task.employee,
         title: task.label,
         bgColor: task.pinned ? '#bfbfbf' : idToColor((task.taskType << 10).toString()),
       };

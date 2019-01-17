@@ -25,6 +25,7 @@ const submitProblemFactChange = (body, successMsg, containerId, solverId) => {
 export default {
   BASE_URI: '/kie-server/services/rest/server',
   MINUTE_STEP: 30,
+  UNASSIGNED_ID: Number.MAX_SAFE_INTEGER,
 };
 
 export { submitProblemFactChange };
