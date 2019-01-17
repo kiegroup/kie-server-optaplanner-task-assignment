@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import JXON from 'jxon';
 
 import constants from '../shared/constants';
+import { Button } from 'antd/lib/radio';
 
 class AutoProduceConsume extends Component {
   constructor(props) {
@@ -80,6 +81,11 @@ class AutoProduceConsume extends Component {
     // TODO: If this.state.isCheckedProduce, produce this.state.produceRate tasks
   }
 
+  handleResetTimer = (event) => {
+    event.preventDefault();
+    this.setState({ time: 0 });
+  }
+
   render() {
     return (
       <div className="container">
@@ -115,6 +121,8 @@ class AutoProduceConsume extends Component {
             Time
             <br />
             {this.state.time}
+            <br />
+            <Button onClick={this.handleResetTimer}>Reset</Button>
           </div>
 
           <div className="col-5 ml-auto">
@@ -145,7 +153,6 @@ class AutoProduceConsume extends Component {
           </div>
         </div>
       </div>
-
     );
   }
 }
