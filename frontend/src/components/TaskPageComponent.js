@@ -13,7 +13,6 @@ class TaskPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tasks: props.tasks,
       isAddTaskModalOpen: false,
       newTask: {
         readyTime: 0,
@@ -90,7 +89,7 @@ class TaskPage extends Component {
   }
 
   render() {
-    const taskList = this.state.tasks.map((task) => {
+    const taskList = this.props.tasks.map((task) => {
       const { id } = task;
       const taskType = this.props.taskTypes.filter(type => type.id === task.taskType)[0].label;
       const customer = this.props.customers.filter(c => c.id === task.customer)[0].label;
