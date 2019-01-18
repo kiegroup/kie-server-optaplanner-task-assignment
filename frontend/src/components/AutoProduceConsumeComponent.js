@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 
 import constants, { submitProblemFactChange } from '../shared/constants';
 
-const PRIORITIES = ['MINOR', 'MAJOR', 'CRITICAL'];
-
 class AutoProduceConsume extends Component {
   constructor(props) {
     super(props);
@@ -36,11 +34,12 @@ class AutoProduceConsume extends Component {
 
   handleProduceRateChange = produceRate => this.setState({ produceRate });
 
-  pinTask = (taskId) => {
+  pinTask = (taskId, consumedTime) => {
     const body = {
       'problem-fact-change': {
         $class: 'TaPinTaskProblemFactChange',
         taskId,
+        consumedTime,
       },
     };
     const successMsg = `Pinned task ${taskId} successfully.`;
@@ -52,7 +51,7 @@ class AutoProduceConsume extends Component {
 
   addRandomTask = () => {
     const readyTime = this.state.time;
-    const priority = PRIORITIES[Math.floor(Math.random() * 3)];
+    const priority = constants.PRIORITIES[Math.floor(Math.random() * 3)];
     const taskTypeId = this.props.taskTypes[
       Math.floor(Math.random() * (this.props.taskTypes.length))
     ].id;
@@ -84,7 +83,7 @@ class AutoProduceConsume extends Component {
         () => {
           this.props.tasks.forEach((task) => {
             if (task.startTime < this.state.time && !task.pinned && task.employee != null) {
-              this.pinTask(task.id);
+              this.pinTask(task.id, this.state.time);
             }
           });
           // TODO: block until everyProblemFactChange is processed then updateBestSolution.
@@ -143,7 +142,7 @@ class AutoProduceConsume extends Component {
           <div className="col-2 text-center">
             Time
             <br />
-            {this.state.time}
+            {(new Date(2018, 0, 1, 0, this.state.time)).toLocaleTimeString()}
             <br />
             <Button onClick={this.handleResetTimer}>Reset</Button>
           </div>

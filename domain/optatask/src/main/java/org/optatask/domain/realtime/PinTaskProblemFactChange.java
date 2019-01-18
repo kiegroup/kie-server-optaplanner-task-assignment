@@ -27,14 +27,17 @@ import org.optatask.domain.TaskAssigningSolution;
 public class PinTaskProblemFactChange extends AbstractPersistable implements ProblemFactChange<TaskAssigningSolution> {
 
     private Long taskId;
+    private int consumedTime;
 
-    public PinTaskProblemFactChange(Long taskId) {
+    public PinTaskProblemFactChange(Long taskId, int consumedTime) {
         this.taskId = taskId;
+        this.consumedTime = consumedTime;
     }
 
     @Override
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
         TaskAssigningSolution solution = scoreDirector.getWorkingSolution();
+        solution.setFrozenCutoff(consumedTime);
         Task toBePinnedTask = null;
 
         for (Task task : solution.getTaskList()) {
@@ -51,9 +54,17 @@ public class PinTaskProblemFactChange extends AbstractPersistable implements Pro
             return;
         }
 
-        scoreDirector.beforeProblemPropertyChanged(workingTask);
-        workingTask.setPinned(true);
-        scoreDirector.afterProblemPropertyChanged(workingTask);
+        if (workingTask.getStartTime() != null && workingTask.getStartTime() < consumedTime) {
+            scoreDirector.beforeProblemPropertyChanged(workingTask);
+            workingTask.setPinned(true);
+            scoreDirector.afterProblemPropertyChanged(workingTask);
+        } else if (workingTask.getReadyTime() < consumedTime) {
+            // Prevent a non-pinned task from being assigned retroactively
+            scoreDirector.beforeProblemPropertyChanged(workingTask);
+            workingTask.setReadyTime(consumedTime);
+            scoreDirector.afterProblemPropertyChanged(workingTask);
+        }
+
         scoreDirector.triggerVariableListeners();
     }
 }
