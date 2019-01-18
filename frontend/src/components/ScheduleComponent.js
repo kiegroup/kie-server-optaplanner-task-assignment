@@ -49,7 +49,8 @@ const extractScheduler = (bestSolution) => {
     bestSolution.taskList.forEach((task) => {
       const start = new Date(2018, 0);
       const end = new Date(2018, 0);
-      start.setMinutes(task.startTime == null || task.employee == null ? task.readyTime : task.startTime);
+      start.setMinutes(task.startTime == null || task.employee == null
+        ? task.readyTime : task.startTime);
       end.setMinutes(task.endTime == null || task.employee == null
         ? task.readyTime + constants.MINUTE_STEP : task.endTime);
 
