@@ -5,7 +5,7 @@ import Header from './HeaderComponent';
 import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
-import constants from '../shared/constants';
+import { updateBestSolution } from '../shared/kie-server-client';
 
 class Main extends Component {
   constructor(props) {
@@ -30,11 +30,11 @@ class Main extends Component {
     this.onContainerDeployed = this.onContainerDeployed.bind(this);
     this.onContainerDeleted = this.onContainerDeleted.bind(this);
     this.handleGetSolution = this.handleGetSolution.bind(this);
-    this.updateBestSolution = this.updateBestSolution.bind(this);
+    this.update = this.update.bind(this);
   }
 
   componentDidMount() {
-    this.updateBestSolution();
+    this.update();
   }
 
   onContainerDeployed(container) {
@@ -45,21 +45,8 @@ class Main extends Component {
     this.setState({ isContainerDeployed: false, bestSolution: {} });
   }
 
-  updateBestSolution() {
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
+  update() {
+    updateBestSolution(this.state.container.containerId, this.state.solver.id)
       .then((response) => {
         if (Object.prototype.hasOwnProperty.call(response, 'best-solution')
           && Object.prototype.hasOwnProperty.call(response, 'score')) {
@@ -69,13 +56,12 @@ class Main extends Component {
             isContainerDeployed: true,
           });
         }
-      })
-      .catch(error => console.log(error));
+      });
   }
 
   handleGetSolution(event) {
     event.preventDefault();
-    this.updateBestSolution();
+    this.update();
   }
 
   render() {
@@ -95,7 +81,7 @@ class Main extends Component {
                 isContainerDeployed={this.state.isContainerDeployed}
                 bestSolution={this.state.bestSolution}
                 score={this.state.score}
-                updateBestSolution={this.updateBestSolution}
+                updateBestSolution={this.update}
               />
             )}
           />
@@ -112,7 +98,7 @@ class Main extends Component {
                   ? this.state.bestSolution.customerList : []}
                 container={this.state.container}
                 solver={this.state.solver}
-                updateBestSolution={this.updateBestSolution}
+                updateBestSolution={this.update}
               />
             )}
           />

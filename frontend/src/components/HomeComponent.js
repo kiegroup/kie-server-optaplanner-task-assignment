@@ -12,7 +12,9 @@ import AutoProduceConsume from './AutoProduceConsumeComponent';
 import PROBLEM from '../shared/24tasks';
 // import PROBLEM from '../shared/simpleProblem';
 
-import constants from '../shared/constants';
+import {
+  deployContainer, addSolver, addProblem, deleteContainer,
+} from '../shared/kie-server-client';
 
 class Home extends Component {
   constructor(props) {
@@ -51,7 +53,7 @@ class Home extends Component {
   handleDeploymentModalConfirm(event) {
     event.preventDefault();
     this.handleDeploymentModalToggle();
-    const body = {
+    const containerBody = {
       commands: [
         {
           'create-container': {
@@ -68,99 +70,35 @@ class Home extends Component {
       ],
     };
 
-    fetch(`${constants.BASE_URI}/config`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    deployContainer(containerBody)
       .then((response) => {
-        if (response.ok) {
-          this.props.onContainerDeployed(this.state.container);
-          return response.text();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => alert(response))
-      .then(() => this.addSolver())
-      .catch(error => console.log(error));
-  }
-
-  addSolver() {
-    const body = {
-      'solver-config-file': this.state.solver.configFilePath,
-    };
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => alert(response))
-      .catch(error => console.log(error));
+        this.props.onContainerDeployed(this.state.container);
+        alert(response);
+      })
+      .then(() => {
+        const solverBody = {
+          'solver-config-file': this.state.solver.configFilePath,
+        };
+        addSolver(solverBody, this.state.container.containerId, this.state.solver.id)
+          .then(solverResponse => alert(solverResponse));
+      });
   }
 
   handleAddProblemModalConfirm(event) {
     event.preventDefault();
     this.handleAddProblemModalToggle();
 
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
-      },
-      body: this.state.problem,
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert('Problem submitted successfully, solver is solving now.');
-        } else {
-          const error = new Error(`${response.status}: ${response.statusText}`);
-          error.response = response;
-          throw error;
-        }
-      }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(error));
+    addProblem(this.state.problem, this.state.container.containerId, this.state.solver.id)
+      .then(response => alert('Problem submitted successfully, solver is solving now.'));
   }
 
   handleDeleteContainer(event) {
     event.preventDefault();
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-      },
-    })
+    deleteContainer(this.state.container.containerId)
       .then((response) => {
-        if (response.ok) {
-          this.props.onContainerDeleted();
-          return response.json();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => alert(JSON.stringify(response.msg)))
-      .catch(error => console.log(error));
+        this.props.onContainerDeleted();
+        alert(JSON.stringify(response.msg));
+      });
   }
 
   handleGetSolution(event) {
