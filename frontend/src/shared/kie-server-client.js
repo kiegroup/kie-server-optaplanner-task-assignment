@@ -122,4 +122,3 @@ export const submitProblemFactChange = (body, successMsg, containerId, solverId)
     }, (error) => { throw new Error(error.message); })
     .catch(error => console.log(error));
 };
-
