@@ -1,7 +1,9 @@
 import JXON from 'jxon';
 
+const BASE_URI = '/kie-server/services/rest/server';
+
 const submitProblemFactChange = (body, successMsg, containerId, solverId) => {
-  fetch(`/kie-server/services/rest/server/containers/${containerId}/solvers/${solverId}/problemfactchanges`, {
+  fetch(`${BASE_URI}/containers/${containerId}/solvers/${solverId}/problemfactchanges`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -23,10 +25,15 @@ const submitProblemFactChange = (body, successMsg, containerId, solverId) => {
 };
 
 export default {
-  BASE_URI: '/kie-server/services/rest/server',
+  BASE_URI,
   MINUTE_STEP: 30,
   UNASSIGNED_ID: Number.MAX_SAFE_INTEGER,
   PRIORITIES: ['MINOR', 'MAJOR', 'CRITICAL'],
+  START_DATE: {
+    year: 2018,
+    month: 0,
+    day: 1,
+  },
 };
 
 export { submitProblemFactChange };

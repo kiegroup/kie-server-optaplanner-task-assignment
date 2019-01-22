@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Scheduler, {
-  SchedulerData, ViewTypes, DATETIME_FORMAT,
+  SchedulerData, ViewTypes, DATETIME_FORMAT, DATE_FORMAT,
 } from 'react-big-scheduler';
 import 'react-big-scheduler/lib/css/style.css';
 import moment from 'moment';
@@ -12,10 +12,12 @@ import constants from '../shared/constants';
 const idToColor = (str) => {
   let hash = 0;
   for (let i = 0; i < str.length; i += 1) {
+    // eslint-disable-next-line no-bitwise
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   let color = '#';
   for (let i = 0; i < 3; i += 1) {
+    // eslint-disable-next-line no-bitwise
     const value = (hash >> (i * 8)) & 0xFF;
     color += (`00${value.toString(16)}`).substr(-2);
   }
@@ -23,7 +25,8 @@ const idToColor = (str) => {
 };
 
 const extractScheduler = (bestSolution) => {
-  const schedulerData = new SchedulerData('2018-01-01', ViewTypes.Day);
+  const startDate = new Date(constants.START_DATE.year, constants.START_DATE.month);
+  const schedulerData = new SchedulerData(moment(startDate).format(DATE_FORMAT), ViewTypes.Day);
   schedulerData.localeMoment.locale('en');
   schedulerData.config.schedulerWidth = 750;
   schedulerData.config.dayCellWidth = 100;
@@ -47,8 +50,8 @@ const extractScheduler = (bestSolution) => {
     });
 
     bestSolution.taskList.forEach((task) => {
-      const start = new Date(2018, 0);
-      const end = new Date(2018, 0);
+      const start = new Date(constants.START_DATE.year, constants.START_DATE.month);
+      const end = new Date(constants.START_DATE.year, constants.START_DATE.month);
       start.setMinutes(task.startTime == null || task.employee == null
         ? task.readyTime : task.startTime);
       end.setMinutes(task.endTime == null || task.employee == null
@@ -60,6 +63,7 @@ const extractScheduler = (bestSolution) => {
         end: moment(end).format(DATETIME_FORMAT),
         resourceId: task.employee == null ? constants.UNASSIGNED_ID : task.employee,
         title: task.label,
+        // eslint-disable-next-line no-bitwise
         bgColor: task.pinned ? '#bfbfbf' : idToColor((task.taskType << 10).toString()),
       };
       events.push(event);

@@ -1,5 +1,8 @@
 {
-    "extends": ["airbnb", "react-app"],
+    "extends": [
+        "airbnb",
+        "react-app"
+    ],
     "env": {
         "browser": true
     },
@@ -9,7 +12,6 @@
         "react/destructuring-assignment": "off",
         "no-console": "off",
         "no-alert": "off",
-        "no-param-reassign": "off",
-        "no-bitwise": "off"
+        "no-param-reassign": "off"
     }
 }

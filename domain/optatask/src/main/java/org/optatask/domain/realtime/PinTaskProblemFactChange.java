@@ -36,22 +36,15 @@ public class PinTaskProblemFactChange extends AbstractPersistable implements Pro
 
     @Override
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
-        TaskAssigningSolution solution = scoreDirector.getWorkingSolution();
-        solution.setFrozenCutoff(consumedTime);
-        Task toBePinnedTask = null;
+        scoreDirector.getWorkingSolution().setFrozenCutoff(consumedTime);
 
-        for (Task task : solution.getTaskList()) {
-            if (task.getId().equals(taskId)) {
-                toBePinnedTask = task;
-                break;
-            }
-        }
-        if (toBePinnedTask == null) {
-            return;
-        }
+        Task toBePinnedTask = new Task();
+        toBePinnedTask.setId((taskId));
+
         Task workingTask = scoreDirector.lookUpWorkingObject(toBePinnedTask);
         if (workingTask == null) {
-            return;
+            throw new IllegalStateException("TaPinTaskProblemFactChange: Trying to pin a task with id " + taskId
+                    + "that doesn't exist in the taskAssigningSolution");
         }
 
         if (workingTask.getStartTime() != null && workingTask.getStartTime() < consumedTime) {

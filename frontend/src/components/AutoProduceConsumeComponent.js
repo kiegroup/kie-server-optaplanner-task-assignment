@@ -49,15 +49,15 @@ class AutoProduceConsume extends Component {
     );
   };
 
+  randomInt = n => Math.floor(Math.random() * n);
+
+  pickRandomItem = arr => arr[this.randomInt(arr.length)];
+
   addRandomTask = () => {
     const readyTime = this.state.time;
-    const priority = constants.PRIORITIES[Math.floor(Math.random() * 3)];
-    const taskTypeId = this.props.taskTypes[
-      Math.floor(Math.random() * (this.props.taskTypes.length))
-    ].id;
-    const customerId = this.props.customers[
-      Math.floor(Math.random() * (this.props.customers.length))
-    ].id;
+    const priority = this.pickRandomItem(constants.PRIORITIES);
+    const taskTypeId = this.pickRandomItem(this.props.taskTypes).id;
+    const customerId = this.pickRandomItem(this.props.customers).id;
     const body = {
       'problem-fact-change': {
         $class: 'TaAddTaskProblemFactChange',
@@ -142,7 +142,10 @@ class AutoProduceConsume extends Component {
           <div className="col-2 text-center">
             Time
             <br />
-            {(new Date(2018, 0, 1, 0, this.state.time)).toLocaleTimeString()}
+            {(new Date(constants.START_DATE.year,
+              constants.START_DATE.month,
+              constants.START_DATE.day,
+              0, this.state.time)).toLocaleTimeString()}
             <br />
             <Button onClick={this.handleResetTimer}>Reset</Button>
           </div>

@@ -5,9 +5,8 @@ import {
   Select, SelectOption, Checkbox,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import JXON from 'jxon';
 
-import constants from '../shared/constants';
+import { submitProblemFactChange } from '../shared/constants';
 
 class TaskPage extends Component {
   constructor(props) {
@@ -51,7 +50,8 @@ class TaskPage extends Component {
       },
     };
 
-    this.submitProblemFactChange(body, `Task ${JSON.stringify(this.state.newTask)} added successfully`);
+    submitProblemFactChange(body, `Task ${JSON.stringify(this.state.newTask)} added successfully`,
+      this.props.container.containerId, this.props.solver.id);
   }
 
   removeTask(taskId) {
@@ -62,30 +62,8 @@ class TaskPage extends Component {
       },
     };
 
-    this.submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`);
-  }
-
-  submitProblemFactChange(body, successMsg) {
-    fetch(`${constants.BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
-      },
-      body: JXON.xmlToString(JXON.jsToXml(body)),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(successMsg);
-          this.props.updateBestSolution();
-          return;
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(error));
+    submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`,
+      this.props.container.containerId, this.props.solver.id);
   }
 
   render() {
@@ -254,7 +232,6 @@ TaskPage.propTypes = {
   customers: PropTypes.instanceOf(Array).isRequired,
   container: PropTypes.instanceOf(Object).isRequired,
   solver: PropTypes.instanceOf(Object).isRequired,
-  updateBestSolution: PropTypes.func.isRequired,
 };
 
 export default TaskPage;
