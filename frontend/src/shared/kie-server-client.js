@@ -1,3 +1,4 @@
+import JXON from 'jxon';
 import constants from './constants';
 
 export const deployContainer = body => (
@@ -99,3 +100,26 @@ export const updateBestSolution = (containerId, solverId) => (
     }, (error) => { throw new Error(error.message); })
     .catch(error => console.log(error))
 );
+
+export const submitProblemFactChange = (body, successMsg, containerId, solverId) => {
+  fetch(`${constants.BASE_URI}/containers/${containerId}/solvers/${solverId}/problemfactchanges`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'X-KIE-ContentType': 'xstream',
+      'Content-Type': 'application/xml',
+    },
+    body: JXON.xmlToString(JXON.jsToXml(body)),
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log(successMsg);
+        return;
+      }
+      const error = new Error(`${response.status}: ${response.statusText}`);
+      error.response = response;
+      throw error;
+    }, (error) => { throw new Error(error.message); })
+    .catch(error => console.log(error));
+};
+

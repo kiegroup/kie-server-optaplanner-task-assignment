@@ -6,7 +6,7 @@ import {
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 
-import { submitProblemFactChange } from '../shared/constants';
+import { submitProblemFactChange } from '../shared/kie-server-client';
 
 class TaskPage extends Component {
   constructor(props) {

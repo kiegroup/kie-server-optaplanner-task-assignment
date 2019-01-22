@@ -4,7 +4,8 @@ import {
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 
-import constants, { submitProblemFactChange } from '../shared/constants';
+import constants from '../shared/constants';
+import { submitProblemFactChange } from '../shared/kie-server-client';
 
 class AutoProduceConsume extends Component {
   constructor(props) {
