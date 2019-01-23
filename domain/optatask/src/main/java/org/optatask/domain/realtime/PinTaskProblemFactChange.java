@@ -26,11 +26,9 @@ import org.optatask.domain.TaskAssigningSolution;
 @XStreamAlias("TaPinTaskProblemFactChange")
 public class PinTaskProblemFactChange extends AbstractPersistable implements ProblemFactChange<TaskAssigningSolution> {
 
-    private Long taskId;
     private int consumedTime;
 
-    public PinTaskProblemFactChange(Long taskId, int consumedTime) {
-        this.taskId = taskId;
+    public PinTaskProblemFactChange(int consumedTime) {
         this.consumedTime = consumedTime;
     }
 
@@ -38,24 +36,17 @@ public class PinTaskProblemFactChange extends AbstractPersistable implements Pro
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
         scoreDirector.getWorkingSolution().setFrozenCutoff(consumedTime);
 
-        Task toBePinnedTask = new Task();
-        toBePinnedTask.setId((taskId));
-
-        Task workingTask = scoreDirector.lookUpWorkingObject(toBePinnedTask);
-        if (workingTask == null) {
-            throw new IllegalStateException("TaPinTaskProblemFactChange: Trying to pin a task with id " + taskId
-                    + "that doesn't exist in the taskAssigningSolution");
-        }
-
-        if (workingTask.getStartTime() != null && workingTask.getStartTime() < consumedTime) {
-            scoreDirector.beforeProblemPropertyChanged(workingTask);
-            workingTask.setPinned(true);
-            scoreDirector.afterProblemPropertyChanged(workingTask);
-        } else if (workingTask.getReadyTime() < consumedTime) {
-            // Prevent a non-pinned task from being assigned retroactively
-            scoreDirector.beforeProblemPropertyChanged(workingTask);
-            workingTask.setReadyTime(consumedTime);
-            scoreDirector.afterProblemPropertyChanged(workingTask);
+        for (Task workingTask : scoreDirector.getWorkingSolution().getTaskList()) {
+            if (workingTask.getStartTime() != null && workingTask.getStartTime() < consumedTime) {
+                scoreDirector.beforeProblemPropertyChanged(workingTask);
+                workingTask.setPinned(true);
+                scoreDirector.afterProblemPropertyChanged(workingTask);
+            } else if (workingTask.getReadyTime() < consumedTime) {
+                // Prevent a non-pinned task from being assigned retroactively
+                scoreDirector.beforeProblemPropertyChanged(workingTask);
+                workingTask.setReadyTime(consumedTime);
+                scoreDirector.afterProblemPropertyChanged(workingTask);
+            }
         }
 
         scoreDirector.triggerVariableListeners();

@@ -35,15 +35,14 @@ class AutoProduceConsume extends Component {
 
   handleProduceRateChange = produceRate => this.setState({ produceRate });
 
-  pinTask = (taskId, consumedTime) => {
+  pinPastTasks = (consumedTime) => {
     const body = {
       'problem-fact-change': {
         $class: 'TaPinTaskProblemFactChange',
-        taskId,
         consumedTime,
       },
     };
-    const successMsg = `Pinned task ${taskId} successfully.`;
+    const successMsg = `Pinned tasks that start before ${consumedTime} successfully.`;
 
     submitProblemFactChange(
       body, successMsg, this.props.container.containerId, this.props.solver.id,
@@ -90,11 +89,7 @@ class AutoProduceConsume extends Component {
               { time: prevState.time + (constants.MINUTE_STEP * prevState.consumeRate) }
             ),
             () => {
-              this.props.tasks.forEach((task) => {
-                if (task.startTime < this.state.time && !task.pinned && task.employee != null) {
-                  this.pinTask(task.id, this.state.time);
-                }
-              });
+              this.pinPastTasks(this.state.time);
             },
           );
         }
@@ -106,7 +101,8 @@ class AutoProduceConsume extends Component {
         }
 
         if (this.state.isCheckedConsume || this.state.isCheckedProduce) {
-          this.props.updateBestSolution();
+          // Wait until problmFactChanges are processed
+          setTimeout(this.props.updateBestSolution, 500);
         }
       });
   }
