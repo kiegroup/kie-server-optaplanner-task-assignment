@@ -122,3 +122,21 @@ export const submitProblemFactChange = (body, successMsg, containerId, solverId)
     }, (error) => { throw new Error(error.message); })
     .catch(error => console.log(error));
 };
+
+export const isEveryProplemFactChangeProcessed = (containerId, solverId) => (
+  fetch(`${constants.BASE_URI}/containers/${containerId}/solvers/${solverId}/problemfactchanges/processed`, {
+    credentials: 'include',
+    headers: {
+      'X-KIE-ContentType': 'json',
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      const error = new Error(`${response.status}: ${response.statusText}`);
+      error.response = response;
+      throw error;
+    }, (error) => { throw new Error(error.message); })
+    .catch(error => console.log(error))
+);

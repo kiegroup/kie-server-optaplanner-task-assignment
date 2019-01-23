@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 
 import constants from '../shared/constants';
-import { submitProblemFactChange } from '../shared/kie-server-client';
+import { submitProblemFactChange, isEveryProplemFactChangeProcessed } from '../shared/kie-server-client';
 
 class AutoProduceConsume extends Component {
   constructor(props) {
@@ -78,29 +78,37 @@ class AutoProduceConsume extends Component {
   }
 
   count = () => {
-    if (this.state.isCheckedConsume) {
-      this.setState(
-        prevState => ({ time: prevState.time + (constants.MINUTE_STEP * prevState.consumeRate) }),
-        () => {
-          this.props.tasks.forEach((task) => {
-            if (task.startTime < this.state.time && !task.pinned && task.employee != null) {
-              this.pinTask(task.id, this.state.time);
-            }
-          });
-          // TODO: block until everyProblemFactChange is processed then updateBestSolution.
-        },
-      );
-    }
+    isEveryProplemFactChangeProcessed(this.props.container.containerId, this.props.solver.id)
+      .then((isProcessed) => {
+        if (!isProcessed) {
+          console.log('Waiting until every problemFactChange is processed');
+          return;
+        }
+        if (this.state.isCheckedConsume) {
+          this.setState(
+            prevState => (
+              { time: prevState.time + (constants.MINUTE_STEP * prevState.consumeRate) }
+            ),
+            () => {
+              this.props.tasks.forEach((task) => {
+                if (task.startTime < this.state.time && !task.pinned && task.employee != null) {
+                  this.pinTask(task.id, this.state.time);
+                }
+              });
+            },
+          );
+        }
 
-    if (this.state.isCheckedProduce) {
-      for (let i = 0; i < this.state.produceRate; i += 1) {
-        this.addRandomTask();
-      }
-    }
+        if (this.state.isCheckedProduce) {
+          for (let i = 0; i < this.state.produceRate; i += 1) {
+            this.addRandomTask();
+          }
+        }
 
-    if (this.state.isCheckedConsume || this.state.isCheckedProduce) {
-      this.props.updateBestSolution();
-    }
+        if (this.state.isCheckedConsume || this.state.isCheckedProduce) {
+          this.props.updateBestSolution();
+        }
+      });
   }
 
   handleResetTimer = (event) => {
