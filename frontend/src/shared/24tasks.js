@@ -54,7 +54,7 @@ export default {
           baseDuration: '30',
           requiredSkillList: {
             TaSkill: {
-              $reference: '../../../../skillList/TaSkill',
+              $reference: '../../../../skillList/TaSkill[4]',
             },
           },
         },
@@ -65,7 +65,7 @@ export default {
           baseDuration: '30',
           requiredSkillList: {
             TaSkill: {
-              $reference: '../../../../skillList/TaSkill',
+              $reference: '../../../../skillList/TaSkill[6]',
             },
           },
         },

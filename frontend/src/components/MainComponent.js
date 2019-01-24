@@ -5,7 +5,7 @@ import Header from './HeaderComponent';
 import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
-import constants from '../shared/constants';
+import { updateBestSolution } from '../shared/kie-server-client';
 
 class Main extends Component {
   constructor(props) {
@@ -18,6 +18,7 @@ class Main extends Component {
         artifactId: 'optatask',
         version: '1.0-SNAPSHOT',
       },
+      isContainerDeployed: false,
       solver: {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
@@ -26,46 +27,41 @@ class Main extends Component {
       score: '',
     };
 
-    this.onContainerChagne = this.onContainerChagne.bind(this);
+    this.onContainerDeployed = this.onContainerDeployed.bind(this);
+    this.onContainerDeleted = this.onContainerDeleted.bind(this);
     this.handleGetSolution = this.handleGetSolution.bind(this);
-    this.updateBestSolution = this.updateBestSolution.bind(this);
+    this.update = this.update.bind(this);
   }
 
-  onContainerChagne(container) {
-    this.setState({ container });
+  componentDidMount() {
+    this.update();
   }
 
-  updateBestSolution() {
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/bestsolution`, {
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-      },
-    })
+  onContainerDeployed(container) {
+    this.setState({ container, isContainerDeployed: true });
+  }
+
+  onContainerDeleted() {
+    this.setState({ isContainerDeployed: false, bestSolution: {} });
+  }
+
+  update() {
+    updateBestSolution(this.state.container.containerId, this.state.solver.id)
       .then((response) => {
-        if (response.ok) {
-          return response.json();
+        if (Object.prototype.hasOwnProperty.call(response, 'best-solution')
+          && Object.prototype.hasOwnProperty.call(response, 'score')) {
+          this.setState({
+            bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'],
+            score: response.score.value,
+            isContainerDeployed: true,
+          });
         }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then((response) => {
-        if (Object.prototype.hasOwnProperty.call(response, 'best-solution')) {
-          this.setState({ bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'] });
-          if (Object.prototype.hasOwnProperty.call(response, 'score')) {
-            this.setState({ score: response.score.value });
-          }
-        } else {
-          alert('Solver is not solving');
-        }
-      })
-      .catch(error => console.log(error));
+      });
   }
 
   handleGetSolution(event) {
     event.preventDefault();
-    this.updateBestSolution();
+    this.update();
   }
 
   render() {
@@ -75,21 +71,26 @@ class Main extends Component {
         <Switch>
           <Route
             path="/home"
-            component={() => (
+            render={props => (
               <Home
+                {...props}
                 container={this.state.container}
-                onContainerChagne={this.onContainerChagne}
+                solver={this.state.solver}
+                onContainerDeployed={this.onContainerDeployed}
+                onContainerDeleted={this.onContainerDeleted}
+                isContainerDeployed={this.state.isContainerDeployed}
                 bestSolution={this.state.bestSolution}
                 score={this.state.score}
-                handleGetSolution={this.handleGetSolution}
+                updateBestSolution={this.update}
               />
             )}
           />
           <Route
             exact
             path="/tasks"
-            component={() => (
+            render={props => (
               <TaskPage
+                {...props}
                 tasks={this.state.bestSolution.taskList ? this.state.bestSolution.taskList : []}
                 taskTypes={this.state.bestSolution.taskTypeList
                   ? this.state.bestSolution.taskTypeList : []}
@@ -97,7 +98,7 @@ class Main extends Component {
                   ? this.state.bestSolution.customerList : []}
                 container={this.state.container}
                 solver={this.state.solver}
-                updateBestSolution={this.updateBestSolution}
+                updateBestSolution={this.update}
               />
             )}
           />

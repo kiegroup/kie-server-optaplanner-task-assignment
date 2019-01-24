@@ -5,15 +5,13 @@ import {
   Select, SelectOption, Checkbox,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import JXON from 'jxon';
 
-import constants from '../shared/constants';
+import { submitProblemFactChange } from '../shared/kie-server-client';
 
 class TaskPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tasks: props.tasks,
       isAddTaskModalOpen: false,
       newTask: {
         readyTime: 0,
@@ -52,7 +50,8 @@ class TaskPage extends Component {
       },
     };
 
-    this.submitProblemFactChange(body, `Task ${JSON.stringify(this.state.newTask)} added successfully`);
+    submitProblemFactChange(body, `Task ${JSON.stringify(this.state.newTask)} added successfully`,
+      this.props.container.containerId, this.props.solver.id);
   }
 
   removeTask(taskId) {
@@ -63,34 +62,13 @@ class TaskPage extends Component {
       },
     };
 
-    this.submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`);
-  }
-
-  submitProblemFactChange(body, successMsg) {
-    fetch(`${constants.BASE_URI}/containers/${this.props.container.containerId}/solvers/${this.props.solver.id}/problemfactchanges`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
-      },
-      body: JXON.xmlToString(JXON.jsToXml(body)),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(successMsg);
-          this.props.updateBestSolution();
-          return;
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(error));
+    submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`,
+      this.props.container.containerId, this.props.solver.id)
+      .then(() => this.props.updateBestSolution());
   }
 
   render() {
-    const taskList = this.state.tasks.map((task) => {
+    const taskList = this.props.tasks.map((task) => {
       const { id } = task;
       const taskType = this.props.taskTypes.filter(type => type.id === task.taskType)[0].label;
       const customer = this.props.customers.filter(c => c.id === task.customer)[0].label;
@@ -105,6 +83,21 @@ class TaskPage extends Component {
         </DataListItem>
       );
     });
+
+    const taskTypeOptions = this.props.taskTypes.map(taskType => (
+      <SelectOption
+        key={taskType.id.toString()}
+        value={taskType.id}
+        label={taskType.title}
+      />
+    ));
+    const customerOptions = this.props.customers.map(customer => (
+      <SelectOption
+        key={customer.id.toString()}
+        value={customer.id}
+        label={customer.name}
+      />
+    ));
 
     return (
       <div className="container">
@@ -145,13 +138,11 @@ class TaskPage extends Component {
               />
             </FormGroup>
             <FormGroup
-              label="Task Type Id"
+              label="Task Type"
               isRequired
               fieldId="taskTypeId"
             >
-              <TextInput
-                isRequired
-                type="number"
+              <Select
                 id="taskTypeId"
                 name="taskTypeId"
                 value={this.state.newTask.taskTypeId}
@@ -160,16 +151,16 @@ class TaskPage extends Component {
                     prevState => ({ newTask: { ...prevState.newTask, taskTypeId } }),
                   );
                 }}
-              />
+              >
+                {taskTypeOptions}
+              </Select>
             </FormGroup>
             <FormGroup
-              label="Customer Id"
+              label="Customer"
               isRequired
               fieldId="customerId"
             >
-              <TextInput
-                isRequired
-                type="number"
+              <Select
                 id="customerId"
                 name="customerId"
                 value={this.state.newTask.customerId}
@@ -178,7 +169,9 @@ class TaskPage extends Component {
                     prevState => ({ newTask: { ...prevState.newTask, customerId } }),
                   );
                 }}
-              />
+              >
+                {customerOptions}
+              </Select>
             </FormGroup>
             <FormGroup
               label="Priority"

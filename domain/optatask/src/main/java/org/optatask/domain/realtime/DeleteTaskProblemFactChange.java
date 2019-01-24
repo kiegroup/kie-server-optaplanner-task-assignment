@@ -34,29 +34,18 @@ public class DeleteTaskProblemFactChange extends AbstractPersistable implements 
 
     @Override
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
-        TaskAssigningSolution solution = scoreDirector.getWorkingSolution();
-        Task toBeRemovedTask = null;
+        Task toBeRemovedTask = new Task();
+        toBeRemovedTask.setId(taskId);
 
-        // A SolutionCloner clones planning entity lists (such as taskList), so no need to clone the processList here
-        for (Task task : solution.getTaskList()) {
-            if (task.getId().equals(taskId)) {
-                toBeRemovedTask = task;
-                break;
-            }
-        }
-        if (toBeRemovedTask == null) {
-            return;
-        }
         Task workingTask = scoreDirector.lookUpWorkingObject(toBeRemovedTask);
-
-        if (workingTask == null) {
+        if (workingTask == null) { // The UI button was pressed more than once
             return;
         }
 
         rerouteChain(scoreDirector, workingTask);
 
         scoreDirector.beforeEntityRemoved(workingTask);
-        solution.getTaskList().remove(workingTask);
+        scoreDirector.getWorkingSolution().getTaskList().remove(workingTask);
         scoreDirector.afterEntityRemoved(workingTask);
         scoreDirector.triggerVariableListeners();
     }

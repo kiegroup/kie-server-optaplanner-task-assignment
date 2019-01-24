@@ -7,9 +7,14 @@ import JXON from 'jxon';
 import PropTypes from 'prop-types';
 
 import Schedule from './ScheduleComponent';
+import AutoProduceConsume from './AutoProduceConsumeComponent';
 
 import PROBLEM from '../shared/24tasks';
-import constants from '../shared/constants';
+// import PROBLEM from '../shared/simpleProblem';
+
+import {
+  deployContainer, addSolver, addProblem, deleteContainer,
+} from '../shared/kie-server-client';
 
 class Home extends Component {
   constructor(props) {
@@ -17,23 +22,20 @@ class Home extends Component {
     this.state = {
       isDeploymentModalOpen: false,
       isAddProblemModalOpen: false,
-      container: {
-        containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
-        groupId: 'org.optatask',
-        artifactId: 'optatask',
-        version: '1.0-SNAPSHOT',
-      },
+      container: this.props.container,
       solver: {
         id: 'solver1',
         configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
       },
-      problem: PROBLEM,
+      problem: JXON.xmlToString(JXON.jsToXml(PROBLEM)),
     };
 
     this.handleDeploymentModalToggle = this.handleDeploymentModalToggle.bind(this);
     this.handleAddProblemModalToggle = this.handleAddProblemModalToggle.bind(this);
     this.handleDeploymentModalConfirm = this.handleDeploymentModalConfirm.bind(this);
     this.handleAddProblemModalConfirm = this.handleAddProblemModalConfirm.bind(this);
+    this.handleDeleteContainer = this.handleDeleteContainer.bind(this);
+    this.handleGetSolution = this.handleGetSolution.bind(this);
   }
 
   handleDeploymentModalToggle = () => {
@@ -51,7 +53,7 @@ class Home extends Component {
   handleDeploymentModalConfirm(event) {
     event.preventDefault();
     this.handleDeploymentModalToggle();
-    const body = {
+    const containerBody = {
       commands: [
         {
           'create-container': {
@@ -68,88 +70,43 @@ class Home extends Component {
       ],
     };
 
-    fetch(`${constants.BASE_URI}/config`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    deployContainer(containerBody)
       .then((response) => {
-        if (response.ok) {
-          return response.text();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => alert(response))
-      .then(() => this.addSolver())
-      .catch(error => console.log(error));
-  }
-
-  addSolver() {
-    const body = {
-      'solver-config-file': this.state.solver.configFilePath,
-    };
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        }
-        const error = new Error(`${response.status}: ${response.statusText}`);
-        error.response = response;
-        throw error;
-      }, (error) => { throw new Error(error.message); })
-      .then(response => alert(response))
-      .catch(error => console.log(error));
+        this.props.onContainerDeployed(this.state.container);
+        alert(response);
+      })
+      .then(() => {
+        const solverBody = {
+          'solver-config-file': this.state.solver.configFilePath,
+        };
+        addSolver(solverBody, this.state.container.containerId, this.state.solver.id)
+          .then(solverResponse => alert(solverResponse));
+      });
   }
 
   handleAddProblemModalConfirm(event) {
     event.preventDefault();
     this.handleAddProblemModalToggle();
 
-    fetch(`${constants.BASE_URI}/containers/${this.state.container.containerId}/solvers/${this.state.solver.id}/state/solving`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'X-KIE-ContentType': 'xstream',
-        'Content-Type': 'application/xml',
-      },
-      body: JXON.xmlToString(JXON.jsToXml(this.state.problem)),
-    })
+    addProblem(this.state.problem, this.state.container.containerId, this.state.solver.id)
+      .then(response => alert('Problem submitted successfully, solver is solving now.'));
+  }
+
+  handleDeleteContainer(event) {
+    event.preventDefault();
+    deleteContainer(this.state.container.containerId)
       .then((response) => {
-        if (response.ok) {
-          alert('Problem submitted successfully, solver is solving now.');
-        } else {
-          const error = new Error(`${response.status}: ${response.statusText}`);
-          error.response = response;
-          throw error;
-        }
-      }, (error) => { throw new Error(error.message); })
-      .catch(error => console.log(error));
+        this.props.onContainerDeleted();
+        alert(JSON.stringify(response.msg));
+      });
+  }
+
+  handleGetSolution(event) {
+    event.preventDefault();
+    this.props.updateBestSolution();
   }
 
   render() {
-    let score;
-    if (this.props.score) {
-      score = (
-        <div className="col-12">
-          Score:&nbsp;
-          {this.props.score}
-        </div>
-      );
-    }
     return (
       <div className="container">
         <br />
@@ -164,11 +121,18 @@ class Home extends Component {
                   </div>
                 </div>
                 <br />
-                <div className="row">
+                <div className="row mb-1">
                   <div className="col">
                     <Button onClick={this.handleDeploymentModalToggle} variant="primary">Add a container</Button>
                   </div>
                 </div>
+                {this.props.isContainerDeployed && (
+                  <div className="row">
+                    <div className="col">
+                      <Button onClick={this.handleDeleteContainer} variant="danger">Delete existing container</Button>
+                    </div>
+                  </div>
+                )}
               </CardBody>
             </Card>
           </div>
@@ -321,7 +285,7 @@ class Home extends Component {
                 <div className="row">
                   <div className="col">
                     <Button onClick={this.handleAddProblemModalToggle} variant="primary">Add a problem</Button>
-                    <Button onClick={this.props.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
+                    <Button onClick={this.handleGetSolution} variant="secondary" className="ml-2"> Get solution</Button>
                   </div>
                 </div>
               </CardBody>
@@ -341,7 +305,7 @@ class Home extends Component {
                     isRequired
                     id="problem"
                     rows="20"
-                    value={JXON.xmlToString(JXON.jsToXml(this.state.problem))}
+                    value={this.state.problem}
                     onChange={(problem) => { this.setState({ problem }); }}
                   />
                 </FormGroup>
@@ -360,12 +324,34 @@ class Home extends Component {
           </div>
         </div>
 
-        <div className="row text-center">
-          {score}
+        <div className="row mb-4">
           <div className="col-12">
-            <Schedule bestSolution={this.props.bestSolution} />
+            <AutoProduceConsume
+              tasks={this.props.bestSolution.taskList ? this.props.bestSolution.taskList : []}
+              taskTypes={this.props.bestSolution.taskTypeList
+                ? this.props.bestSolution.taskTypeList : []}
+              customers={this.props.bestSolution.customerList
+                ? this.props.bestSolution.customerList : []}
+              updateBestSolution={this.props.updateBestSolution}
+              container={this.props.container}
+              solver={this.props.solver}
+            />
           </div>
         </div>
+
+        <Card>
+          <CardHeader className="text-center">
+            {this.props.score && (
+              <div className="col-12">
+                Score:&nbsp;
+                {this.props.score}
+              </div>
+            )}
+          </CardHeader>
+          <CardBody>
+            <Schedule bestSolution={this.props.bestSolution} />
+          </CardBody>
+        </Card>
       </div>
     );
   }
@@ -373,8 +359,13 @@ class Home extends Component {
 
 Home.propTypes = {
   bestSolution: PropTypes.instanceOf(Object).isRequired,
-  handleGetSolution: PropTypes.func.isRequired,
   score: PropTypes.string.isRequired,
+  onContainerDeployed: PropTypes.func.isRequired,
+  onContainerDeleted: PropTypes.func.isRequired,
+  isContainerDeployed: PropTypes.bool.isRequired,
+  updateBestSolution: PropTypes.func.isRequired,
+  container: PropTypes.instanceOf(Object).isRequired,
+  solver: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default Home;
