@@ -101,7 +101,7 @@ export const updateBestSolution = (containerId, solverId) => (
     .catch(error => console.log(error))
 );
 
-export const submitProblemFactChange = (body, successMsg, containerId, solverId) => {
+export const submitProblemFactChange = (body, successMsg, containerId, solverId) => (
   fetch(`${constants.BASE_URI}/containers/${containerId}/solvers/${solverId}/problemfactchanges`, {
     method: 'POST',
     credentials: 'include',
@@ -114,14 +114,14 @@ export const submitProblemFactChange = (body, successMsg, containerId, solverId)
     .then((response) => {
       if (response.ok) {
         console.log(successMsg);
-        return;
+        return response.text();
       }
       const error = new Error(`${response.status}: ${response.statusText}`);
       error.response = response;
       throw error;
     }, (error) => { throw new Error(error.message); })
-    .catch(error => console.log(error));
-};
+    .catch(error => console.log(error))
+);
 
 export const isEveryProplemFactChangeProcessed = (containerId, solverId) => (
   fetch(`${constants.BASE_URI}/containers/${containerId}/solvers/${solverId}/problemfactchanges/processed`, {

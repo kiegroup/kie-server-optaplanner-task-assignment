@@ -63,7 +63,8 @@ class TaskPage extends Component {
     };
 
     submitProblemFactChange(body, `Task with id ${taskId} was removed successfully`,
-      this.props.container.containerId, this.props.solver.id);
+      this.props.container.containerId, this.props.solver.id)
+      .then(() => this.props.updateBestSolution());
   }
 
   render() {
@@ -232,6 +233,7 @@ TaskPage.propTypes = {
   customers: PropTypes.instanceOf(Array).isRequired,
   container: PropTypes.instanceOf(Object).isRequired,
   solver: PropTypes.instanceOf(Object).isRequired,
+  updateBestSolution: PropTypes.func.isRequired,
 };
 
 export default TaskPage;

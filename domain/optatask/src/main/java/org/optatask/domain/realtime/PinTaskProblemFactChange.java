@@ -36,6 +36,8 @@ public class PinTaskProblemFactChange extends AbstractPersistable implements Pro
     public void doChange(ScoreDirector<TaskAssigningSolution> scoreDirector) {
         scoreDirector.getWorkingSolution().setFrozenCutoff(consumedTime);
 
+        // There's no need to call scoreDirector.lookUpWorkingObject(workingTask);
+        //   since we're looping through the whole taskList
         for (Task workingTask : scoreDirector.getWorkingSolution().getTaskList()) {
             if (workingTask.getStartTime() != null && workingTask.getStartTime() < consumedTime) {
                 scoreDirector.beforeProblemPropertyChanged(workingTask);
