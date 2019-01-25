@@ -25,7 +25,7 @@ class Home extends Component {
       container: this.props.container,
       solver: {
         id: 'solver1',
-        configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
+        configFilePath: 'org/kie/server/examples/optaplanner/taskassignment/kjar/solver/taskAssigningSolverConfig.xml',
       },
       problem: JXON.xmlToString(JXON.jsToXml(PROBLEM)),
     };

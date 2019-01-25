@@ -8,4 +8,5 @@ export default {
     month: 0,
     day: 1,
   },
+  BEST_SOLUTION_CLASS: 'org.kie.server.examples.optaplanner.taskassignment.kjar.domain.TaskAssigningSolution',
 };

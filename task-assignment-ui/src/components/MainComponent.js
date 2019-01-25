@@ -6,6 +6,7 @@ import Home from './HomeComponent';
 import TaskPage from './TaskPageComponent';
 
 import { updateBestSolution } from '../shared/kie-server-client';
+import constants from '../shared/constants';
 
 class Main extends Component {
   constructor(props) {
@@ -13,15 +14,15 @@ class Main extends Component {
 
     this.state = {
       container: {
-        containerId: 'org.optatask:optatask:1.0-SNAPSHOT',
-        groupId: 'org.optatask',
-        artifactId: 'optatask',
+        containerId: 'org.kie.server.examples.optaplanner:task-assignment-kjar:1.0-SNAPSHOT',
+        groupId: 'org.kie.server.examples.optaplanner',
+        artifactId: 'task-assignment-kjar',
         version: '1.0-SNAPSHOT',
       },
       isContainerDeployed: false,
       solver: {
         id: 'solver1',
-        configFilePath: 'org/optatask/solver/taskAssigningSolverConfig.xml',
+        configFilePath: 'org/kie/server/examples/optaplanner/taskassignment/kjar/solver/taskAssigningSolverConfig.xml',
       },
       bestSolution: {},
       score: '',
@@ -51,7 +52,7 @@ class Main extends Component {
         if (Object.prototype.hasOwnProperty.call(response, 'best-solution')
           && Object.prototype.hasOwnProperty.call(response, 'score')) {
           this.setState({
-            bestSolution: response['best-solution']['org.optatask.domain.TaskAssigningSolution'],
+            bestSolution: response['best-solution'][constants.BEST_SOLUTION_CLASS],
             score: response.score.value,
             isContainerDeployed: true,
           });
