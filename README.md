@@ -1,4 +1,4 @@
-# Kie Server OptaPlanner Task Assignment
+# KIE Server OptaPlanner Task Assignment
 An example of assigning tasks on Kie Server using OptaPlanner.
 
 Developing Drools and jBPM
