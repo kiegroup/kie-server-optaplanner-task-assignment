@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.drools.org/xsd/kmodule">
+  <kbase name="optataskKBase" packages="org.kie.server.examples.optaplanner.taskassignment.kjar.solver">
+    <ksession name="optataskKsession"/>
+  </kbase>
+</kmodule>

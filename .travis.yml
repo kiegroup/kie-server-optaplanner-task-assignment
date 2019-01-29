@@ -8,7 +8,7 @@ jobs:
           - "$HOME/.npm"
           - "node_modules"
       before_install:
-        - "cd frontend"
+        - "cd task-assignment-ui"
       script:
         - npm test
         - npm run lint
@@ -17,5 +17,4 @@ jobs:
     - language: java
       jdk: openjdk8
       before_install:
-        - "cd domain/optatask"
-
+        - "cd task-assignment-kjar"
