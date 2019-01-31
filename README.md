@@ -35,7 +35,7 @@ cp kie-server-...-ee7.war WILDFLY_HOME/standalone/deployments/kie-server.war
 WILDFLY_HOME/bin/add-user.sh -a -u 'kieserver' -p 'kieserver1!' -ro 'kie-server'
 WILDFLY_HOME/bin/standalone.sh -c standalone-full.xml
 ```
-1. Run the UI:
+3. Run the UI:
 ```bash
 cd task-assignment-ui
 npm install
