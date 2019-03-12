@@ -1,0 +1,1 @@
+Main-Class: org.kie.server.examples.optaplanner.taskassignment.client.TaskAssignmentClient
